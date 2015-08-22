@@ -212,7 +212,7 @@ func initialize() error {
 	}
 
 	json.Unmarshal(file, &c)
-	
+
 	return nil
 }
 
