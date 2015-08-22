@@ -9,10 +9,13 @@ import (
 	"testing"
 	"time"
 
+	"recleague/logging"
 	"recleague/model"
 
 	_ "github.com/lib/pq"
 )
+
+var log logging.Logger = logging.NewLog15()
 
 var leagueRepo *PgLeagueRepository
 var seasonRepo *PgSeasonRepository
@@ -32,6 +35,7 @@ var c config
 func TestMain(m *testing.M) {
 	err := initialize()
 	if err != nil {
+		log.Error("Unable to initialize database")
 		os.Exit(1)
 	}
 
@@ -39,6 +43,7 @@ func TestMain(m *testing.M) {
 
 	manager, err := NewPgManager(url)
 	if err != nil {
+		log.Error("Unable to initialize PgManager")
 		os.Exit(1)
 	}
 
