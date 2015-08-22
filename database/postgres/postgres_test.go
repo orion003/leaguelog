@@ -2,6 +2,10 @@ package postgres
 
 import (
 	"database/sql"
+	"encoding/json"
+	"errors"
+	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
@@ -15,12 +19,27 @@ var seasonRepo *PgSeasonRepository
 var teamRepo *PgTeamRepository
 var gameRepo *PgGameRepository
 
+type config struct {
+	Database database `json:database`
+}
+
+type database struct {
+	Url string `json:url`
+}
+
+var c config
+
 func TestMain(m *testing.M) {
-	url := ""
+	err := initialize()
+	if err != nil {
+		os.Exit(1)
+	}
+
+	url := c.Database.Url
 
 	manager, err := NewPgManager(url)
 	if err != nil {
-		
+		os.Exit(1)
 	}
 
 	leagueRepo = &PgLeagueRepository{
@@ -186,8 +205,19 @@ func TestCreateGame(t *testing.T) {
 
 //helper functions
 
+func initialize() error {
+	file, err := ioutil.ReadFile("./_config.json")
+	if err != nil {
+		return errors.New("Unable to open file: _config.json")
+	}
+
+	json.Unmarshal(file, &c)
+	
+	return nil
+}
+
 func truncateTables() error {
-	db, err := sql.Open("postgres", url)
+	db, err := sql.Open("postgres", c.Database.Url)
 	if err != nil {
 		return err
 	}
@@ -214,7 +244,7 @@ func createLeague(repo *PgLeagueRepository) (*model.League, error) {
 	return league, nil
 }
 
-func createSeason(repo *PgLeagueRepository, league *model.League) (*model.Season, error) {
+func createSeason(repo *PgSeasonRepository, league *model.League) (*model.Season, error) {
 	startDate := time.Date(2015, time.October, 6, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(2016, time.April, 24, 0, 0, 0, 0, time.UTC)
 	season := &model.Season{
