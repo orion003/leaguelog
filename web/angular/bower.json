@@ -1,0 +1,17 @@
+{
+  "name": "Rec League",
+  "version": "0.0.1",
+  "homepage": "https://github.com/orion003/recleague",
+  "authors": [
+    "orion003 <parrottr3@gmail.com>"
+  ],
+  "description": "A management tool for sports leagues",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
