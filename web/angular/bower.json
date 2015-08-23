@@ -6,12 +6,14 @@
     "orion003 <parrottr3@gmail.com>"
   ],
   "description": "A management tool for sports leagues",
-  "license": "MIT",
   "ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "angular": "~1.44"
+  }
 }
