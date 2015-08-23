@@ -99,10 +99,8 @@ func (repo *PgSeasonRepository) Create(season *model.Season) error {
 }
 
 func (repo *PgSeasonRepository) FindById(id int) (*model.Season, error) {
-	row := repo.manager.db.QueryRow(`SELECT s.id, s.name, s.start_date, s.end_date, s.created, s.modified, 
-	    l.id, l.name, l.sport, l.created, l.modified
+	row := repo.manager.db.QueryRow(`SELECT s.id, s.league_id, s.name, s.start_date, s.end_date, s.created, s.modified 
         FROM season s
-        INNER JOIN league l on s.league_id = l.id
         WHERE s.id = $1`, id)
 
 	season, err := marshal.Season(row)
@@ -140,10 +138,8 @@ func (repo *PgTeamRepository) Create(team *model.Team) error {
 func (repo *PgTeamRepository) FindById(id int) (*model.Team, error) {
 	row := repo.manager.db.QueryRow(`
 	    SELECT 
-	        t.id, t.name, t.created, t.modified, 
-	        l.id, l.name, l.sport, l.created, l.modified
+	        t.id, t.league_id, t.name, t.created, t.modified
         FROM team t
-            INNER JOIN league l on t.league_id = l.id
         WHERE t.id = $1`, id)
 
 	team, err := marshal.Team(row)
@@ -180,17 +176,8 @@ func (repo *PgGameRepository) Create(game *model.Game) error {
 
 func (repo *PgGameRepository) FindById(id int) (*model.Game, error) {
 	row := repo.manager.db.QueryRow(`
-	    SELECT 
-	        g.id, g.start_time, g.home_score, g.away_score, g.created, g.modified,
-	        s.id, s.name, s.start_date, s.end_date, s.created, s.modified,
-	        t1.id, t1.name, t1.created, t1.modified,
-	        t2.id, t2.name, t2.created, t2.modified, 
-	        l.id, l.name, l.sport, l.created, l.modified
+	    SELECT g.id, g.season_id, g.start_time, g.home_team_id, g.away_team_id, g.home_score, g.away_score, g.created, g.modified
         FROM game g
-            INNER JOIN season s on g.season_id = s.id
-            INNER JOIN team t1 on g.home_team_id = t1.id
-            INNER JOIN team t2 on g.away_team_id = t2.id
-            INNER JOIN league l on s.league_id = l.id
         WHERE g.id = $1`, id)
 
 	game, err := marshal.Game(row)

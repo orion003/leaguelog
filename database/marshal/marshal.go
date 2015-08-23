@@ -25,8 +25,7 @@ func Season(row MultiScanner) (*model.Season, error) {
 	var season model.Season
 	var league model.League
 
-	err := row.Scan(&season.Id, &season.Name, &season.Start_date, &season.End_date, &season.Created, &season.Modified,
-		&league.Id, &league.Name, &league.Sport, &league.Created, &league.Modified)
+	err := row.Scan(&season.Id, &league.Id, &season.Name, &season.Start_date, &season.End_date, &season.Created, &season.Modified)
 
 	if err != nil {
 		return &model.Season{}, err
@@ -42,8 +41,7 @@ func Team(row MultiScanner) (*model.Team, error) {
 	var team model.Team
 	var league model.League
 
-	err := row.Scan(&team.Id, &team.Name, &team.Created, &team.Modified,
-		&league.Id, &league.Name, &league.Sport, &league.Created, &league.Modified)
+	err := row.Scan(&team.Id, &league.Id, &team.Name, &team.Created, &team.Modified)
 
 	if err != nil {
 		return &model.Team{}, err
@@ -55,33 +53,20 @@ func Team(row MultiScanner) (*model.Team, error) {
 }
 
 func Game(row MultiScanner) (*model.Game, error) {
-	// g.id, g.start_time, g.home_score, g.away_score, g.created, g.modified
-	// s.id, s.name, s.start_date, s.end_date, s.created, s.modified,
-	// t1.id, t1.name, t1.created, t1.modified,
-	// t2.id, t.name, t2.created, t2.modified,
-	// l.id, l.name, l.sport, l.created, l.modified
 	var game model.Game
 	var season model.Season
 	var home model.Team
 	var away model.Team
-	var league model.League
 
-	err := row.Scan(&game.Id, &game.Start_time, &game.Home_score, &game.Away_score, &game.Created, &game.Modified,
-		&season.Id, &season.Name, &season.Start_date, &season.End_date, &season.Created, &season.Modified,
-		&home.Id, &home.Name, &home.Created, &home.Modified,
-		&away.Id, &away.Name, &away.Created, &away.Modified,
-		&league.Id, &league.Name, &league.Sport, &league.Created, &league.Modified)
+	err := row.Scan(&game.Id, &season.Id, &game.Start_time, &home.Id, &away.Id, &game.Home_score, &game.Away_score, &game.Created, &game.Modified)
 
 	if err != nil {
 		return &model.Game{}, err
 	}
 
 	game.Season = &season
-	game.Season.League = &league
 	game.Home_team = &home
-	game.Home_team.League = &league
 	game.Away_team = &away
-	game.Away_team.League = &league
 
 	return &game, nil
 }
