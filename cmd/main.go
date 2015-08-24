@@ -3,15 +3,23 @@ package main
 import (
 	"fmt"
 	"net/http"
+	
+	"github.com/gorilla/mux"
 )
 
-func indexHandler(res http.ResponseWriter, req *http.Request) {
-	http.ServeFile(res, req, "../web/angular/index.html")
-}
+const root string = "../web/angular/"
 
 func main() {
-	http.HandleFunc("/", indexHandler) // unknown paths should display this root
+    r := mux.NewRouter()
+    
+	r.HandleFunc("/", indexHandler)
+	r.PathPrefix("/app/").Handler(http.StripPrefix("/app/", http.FileServer(http.Dir(root + "app/"))))
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir(root + "assets/")))) 
 
 	fmt.Print("Listening on port 8000")
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(":8000", r)
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, root + "index.html")
 }
