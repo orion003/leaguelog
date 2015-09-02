@@ -1,0 +1,7 @@
+<div ng-controller="LandingController as landing">
+    <form name="landingForm" novalidate>
+        E-mail: <input type="email" ng-model="user.email" /><br />
+        <input type="submit" ng-click="landing.saveUser(user)" value="Save" />
+    </form>
+    <pre>form = {{user | json}}</pre>
+</div>

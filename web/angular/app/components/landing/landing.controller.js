@@ -1,4 +1,4 @@
 angular.module('landing')
-    .controller('LandingController', function($scope) {
-    
-    });
+    .controller('LandingController', ['$state', function($state){
+        
+    }]);
