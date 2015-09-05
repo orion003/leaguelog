@@ -78,3 +78,11 @@ func (game *Game) Validate() error {
 
 	return nil
 }
+
+func (user *User) Validate() error {
+    if user.Email == "" {
+        return errors.New("Cannot create User without email.")   
+    }
+    
+    return nil
+}

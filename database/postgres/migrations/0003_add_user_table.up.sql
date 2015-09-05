@@ -1,0 +1,6 @@
+CREATE TABLE user0 (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR (128) UNIQUE NOT NULL,
+    created TIMESTAMP NOT NULL,
+    modified TIMESTAMP NOT NULL
+);

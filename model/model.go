@@ -25,6 +25,12 @@ type GameRepository interface {
 	FindById(id int)
 }
 
+type UserRepository interface {
+	Create(user *User)
+	FindById(id int)
+	FindAll()
+}
+
 type Model struct {
 	Id       int
 	Created  time.Time
@@ -59,4 +65,9 @@ type Game struct {
 	Away_team  *Team
 	Home_score int
 	Away_score int
+}
+
+type User struct {
+	Model
+	Email string
 }

@@ -70,3 +70,14 @@ func Game(row MultiScanner) (*model.Game, error) {
 
 	return &game, nil
 }
+
+func User(row MultiScanner) (*model.User, error) {
+    var user model.User
+    
+    err := row.Scan(&user.Id, &user.Email, &user.Created, &user.Modified)
+    if err != nil {
+        return &model.User{}, err   
+    }
+    
+    return &user, nil
+}
