@@ -1,16 +1,17 @@
 angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider',
     function($stateProvider, $urlRouterProvider) {
-        $urlRouterProvider.otherwise('/');
-        
         $stateProvider
             .state('landing', {
-                url: '/',
+                url: '',
+                resolve: {
+                    users: ['LandingService',
+                        function(LandingService) {
+                            return LandingService.getUsers();
+                        }],
+                    user: function() {return {};}
+                },
                 templateUrl: '/app/components/landing/landing.html',
                 controller: 'LandingController',
-                controllerAs: 'landing',
-                resolve: {
-                    users: function() {return {};},
-                    user: function() {return {};}
-                }
-            })
+                controllerAs: 'landing'
+            });
     }]);

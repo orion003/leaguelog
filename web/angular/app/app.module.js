@@ -1,4 +1,4 @@
-angular.module("landing", []);
+angular.module("landing", ['ui.router']);
 
 angular.module('rlApp', [
     'ui.router',
