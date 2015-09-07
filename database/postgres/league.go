@@ -7,8 +7,16 @@ import (
 	"recleague/model"
 )
 
+func NewPgLeagueRepository(manager *PgManager) *PgLeagueRepository {
+	repo := &PgLeagueRepository{
+		manager: manager,
+	}
+
+	return repo
+}
+
 func (repo *PgLeagueRepository) Create(league *model.League) error {
-	err := league.Validate()
+	err := league.Validate(repo)
 	if err != nil {
 		return err
 	}
@@ -68,7 +76,7 @@ func (repo *PgLeagueRepository) FindById(id int) (*model.League, error) {
 
 	league, err := marshal.League(row)
 	if err != nil {
-		return &model.League{}, err
+		return nil, err
 	}
 
 	return league, nil

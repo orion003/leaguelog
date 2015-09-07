@@ -7,8 +7,16 @@ import (
 	"recleague/model"
 )
 
+func NewPgSeasonRepository(manager *PgManager) *PgSeasonRepository {
+	repo := &PgSeasonRepository{
+		manager: manager,
+	}
+
+	return repo
+}
+
 func (repo *PgSeasonRepository) Create(season *model.Season) error {
-	err := season.Validate()
+	err := season.Validate(repo)
 	if err != nil {
 		return err
 	}

@@ -1,14 +1,22 @@
 package postgres
 
 import (
-    "time"
-    
-    "recleague/database/marshal"
+	"time"
+
+	"recleague/database/marshal"
 	"recleague/model"
 )
 
+func NewPgUserRepository(manager *PgManager) *PgUserRepository {
+	repo := &PgUserRepository{
+		manager: manager,
+	}
+
+	return repo
+}
+
 func (repo *PgUserRepository) Create(user *model.User) error {
-    err := user.Validate()
+	err := user.Validate(repo)
 	if err != nil {
 		return err
 	}
@@ -67,9 +75,16 @@ func (repo *PgUserRepository) FindById(id int) (*model.User, error) {
         WHERE id = $1`, id)
 
 	user, err := marshal.User(row)
-	if err != nil {
-		return &model.User{}, err
-	}
 
-	return user, nil
+	return user, err
+}
+
+func (repo *PgUserRepository) FindByEmail(email string) (*model.User, error) {
+	row := repo.manager.db.QueryRow(`SELECT id, email, created, modified
+        FROM user0
+        WHERE email = $1`, email)
+
+	user, err := marshal.User(row)
+
+	return user, err
 }

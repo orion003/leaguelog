@@ -3,13 +3,11 @@ package model
 import (
 	"errors"
 	"time"
+
+	"github.com/asaskevich/govalidator"
 )
 
-type Validator interface {
-	Validate() error
-}
-
-func (league *League) Validate() error {
+func (league *League) Validate(repo LeagueRepository) error {
 	if league.Name == "" {
 		return errors.New("Cannot create League without name.")
 	}
@@ -21,7 +19,7 @@ func (league *League) Validate() error {
 	return nil
 }
 
-func (season *Season) Validate() error {
+func (season *Season) Validate(repo SeasonRepository) error {
 	if season.League == nil {
 		return errors.New("Cannot create Season without League.")
 	}
@@ -46,7 +44,7 @@ func (season *Season) Validate() error {
 	return nil
 }
 
-func (team *Team) Validate() error {
+func (team *Team) Validate(repo TeamRepository) error {
 	if team.League == nil {
 		return errors.New("Cannot create Team without League.")
 	}
@@ -58,7 +56,7 @@ func (team *Team) Validate() error {
 	return nil
 }
 
-func (game *Game) Validate() error {
+func (game *Game) Validate(repo GameRepository) error {
 	if game.Season == nil {
 		return errors.New("Cannot create Game without Season.")
 	}
@@ -79,10 +77,19 @@ func (game *Game) Validate() error {
 	return nil
 }
 
-func (user *User) Validate() error {
-    if user.Email == "" {
-        return errors.New("Cannot create User without email.")   
-    }
-    
-    return nil
+func (user *User) Validate(repo UserRepository) error {
+	if user.Email == "" {
+		return errors.New("Cannot create User without email.")
+	}
+
+	if !govalidator.IsEmail(user.Email) {
+		return UserInvalidEmail
+	}
+
+	u, _ := repo.FindByEmail(user.Email)
+	if u != nil {
+		return UserDuplicateEmail
+	}
+
+	return nil
 }

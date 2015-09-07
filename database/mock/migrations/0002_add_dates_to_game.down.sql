@@ -1,0 +1,2 @@
+ALTER TABLE game DROP COLUMN created;
+ALTER TABLE game DROP COLUMN modified;

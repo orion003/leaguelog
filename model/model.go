@@ -5,30 +5,31 @@ import (
 )
 
 type LeagueRepository interface {
-	Create(league *League)
-	FindById(id int)
-	FindAll()
+	Create(league *League) error
+	FindById(id int) (*League, error)
+	FindAll() ([]League, error)
 }
 
 type SeasonRepository interface {
-	Create(season *Season)
-	FindById(id int)
+	Create(season *Season) error
+	FindById(id int) (*Season, error)
 }
 
 type TeamRepository interface {
-	Create(team *Team)
-	FindById(id int)
+	Create(team *Team) error
+	FindById(id int) (*Team, error)
 }
 
 type GameRepository interface {
-	Create(game *Game)
-	FindById(id int)
+	Create(game *Game) error
+	FindById(id int) (*Game, error)
 }
 
 type UserRepository interface {
-	Create(user *User)
-	FindById(id int)
-	FindAll()
+	Create(user *User) error
+	FindById(id int) (*User, error)
+	FindByEmail(email string) (*User, error)
+	FindAll() ([]User, error)
 }
 
 type Model struct {

@@ -7,8 +7,16 @@ import (
 	"recleague/model"
 )
 
+func NewPgGameRepository(manager *PgManager) *PgGameRepository {
+	repo := &PgGameRepository{
+		manager: manager,
+	}
+
+	return repo
+}
+
 func (repo *PgGameRepository) Create(game *model.Game) error {
-	err := game.Validate()
+	err := game.Validate(repo)
 	if err != nil {
 		return err
 	}

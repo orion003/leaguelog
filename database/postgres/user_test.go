@@ -26,3 +26,21 @@ func testCreateUser(t *testing.T) {
 		t.Error("User emails do not match.")
 	}
 }
+
+func testFindUserByEmail(t *testing.T) {
+	truncateTables()
+
+	user, err := createUser(userRepo)
+	if err != nil {
+		t.Errorf("Error creating user: %v", err)
+	}
+
+	persistedUser, err := userRepo.FindByEmail(user.Email)
+	if err != nil {
+		t.Errorf("Error finding user id %d: %v", user.Id, err)
+	}
+
+	if user.Id != persistedUser.Id {
+		t.Error("User IDs do not match.")
+	}
+}

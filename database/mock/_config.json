@@ -1,0 +1,5 @@
+{
+    "database": {
+        "url": "postgres://rparrott:09A624uu@localhost:5432/recleague_test"
+    }
+}

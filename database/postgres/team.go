@@ -7,8 +7,16 @@ import (
 	"recleague/model"
 )
 
+func NewPgTeamRepository(manager *PgManager) *PgTeamRepository {
+	repo := &PgTeamRepository{
+		manager: manager,
+	}
+
+	return repo
+}
+
 func (repo *PgTeamRepository) Create(team *model.Team) error {
-	err := team.Validate()
+	err := team.Validate(repo)
 	if err != nil {
 		return err
 	}

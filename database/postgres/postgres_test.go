@@ -48,21 +48,11 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	leagueRepo = &PgLeagueRepository{
-		manager: manager,
-	}
-	seasonRepo = &PgSeasonRepository{
-		manager: manager,
-	}
-	teamRepo = &PgTeamRepository{
-		manager: manager,
-	}
-	gameRepo = &PgGameRepository{
-		manager: manager,
-	}
-	userRepo = &PgUserRepository{
-		manager: manager,
-	}
+	leagueRepo = NewPgLeagueRepository(manager)
+	seasonRepo = NewPgSeasonRepository(manager)
+	teamRepo = NewPgTeamRepository(manager)
+	gameRepo = NewPgGameRepository(manager)
+	userRepo = NewPgUserRepository(manager)
 
 	r := m.Run()
 
@@ -89,6 +79,7 @@ func TestGame(t *testing.T) {
 
 func TestUser(t *testing.T) {
 	testCreateUser(t)
+	testFindUserByEmail(t)
 }
 
 //helper functions
@@ -183,7 +174,7 @@ func createGame(repo *PgGameRepository, season *model.Season, hometeam *model.Te
 
 func createUser(repo *PgUserRepository) (*model.User, error) {
 	user := &model.User{
-		Email: "parrottr3@gmail.com",
+		Email: "test@email.com",
 	}
 
 	err := repo.Create(user)
