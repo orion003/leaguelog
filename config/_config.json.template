@@ -1,5 +1,8 @@
 {
     "database": {
         "url": "postgres://username:password@server:5432/database"
+    },
+    "routing": {
+        "root": "web/angular/"
     }
 }

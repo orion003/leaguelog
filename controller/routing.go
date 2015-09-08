@@ -16,9 +16,11 @@ type Route struct {
 	Handler http.HandlerFunc
 }
 
-const root string = "../web/angular/"
+var root string
 
-func NewRouter(c *Controller) *mux.Router {
+func NewRouter(c *Controller, rt string) *mux.Router {
+    root = rt
+    
 	r := mux.NewRouter()
 	routes := createRoutes(c)
 

@@ -24,7 +24,8 @@ func main() {
 
 	initializeRepos(c)
 
-	r := controller.NewRouter(c)
+    fmt.Printf("Initializing root route: %s \n", conf.Routing.Root)
+	r := controller.NewRouter(c, conf.Routing.Root)
 
 	fmt.Println("Listening on port 8000")
 	http.ListenAndServe(":8000", r)
