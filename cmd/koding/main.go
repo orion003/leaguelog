@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"recleague/config"
+	"recleague/cmd/koding/config"
 	"recleague/controller"
 	"recleague/database/postgres"
 	"recleague/logging"
