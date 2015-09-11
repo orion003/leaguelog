@@ -48,11 +48,15 @@ func (c *Controller) SetUserRepository(repo model.UserRepository) {
 }
 
 func (c *Controller) AddEmail(w http.ResponseWriter, r *http.Request) {
-	user := &model.User{
-		Email: r.FormValue("email"),
-	}
+    decoder := json.NewDecoder(r.Body)
+    
+    var user model.User
+    err := decoder.Decode(&user)
+    if err != nil {
+        c.log.Error("Unable to decode JSON.")
+    }
 
-	err := c.userRepo.Create(user)
+	err = c.userRepo.Create(&user)
 	if err != nil {
 		c.log.Error(fmt.Sprintf("AddEmail error: %v ", err))
 		w.WriteHeader(http.StatusNotAcceptable)
