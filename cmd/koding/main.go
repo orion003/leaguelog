@@ -24,7 +24,7 @@ func main() {
 
 	initializeRepos(c)
 
-    fmt.Printf("Initializing root route: %s \n", conf.Routing.Root)
+	fmt.Printf("Initializing root route: %s \n", conf.Routing.Root)
 	r := controller.NewRouter(c, conf.Routing.Root)
 
 	fmt.Println("Listening on port 8000")

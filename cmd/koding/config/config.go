@@ -4,7 +4,7 @@ import ()
 
 type Config struct {
 	Database Database `json:database`
-	Routing Routing `json:routing`
+	Routing  Routing  `json:routing`
 }
 
 type Database struct {
@@ -12,5 +12,5 @@ type Database struct {
 }
 
 type Routing struct {
-    Root string `json:root`   
+	Root string `json:root`
 }

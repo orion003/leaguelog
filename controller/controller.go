@@ -48,13 +48,13 @@ func (c *Controller) SetUserRepository(repo model.UserRepository) {
 }
 
 func (c *Controller) AddEmail(w http.ResponseWriter, r *http.Request) {
-    decoder := json.NewDecoder(r.Body)
-    
-    var user model.User
-    err := decoder.Decode(&user)
-    if err != nil {
-        c.log.Error("Unable to decode JSON.")
-    }
+	decoder := json.NewDecoder(r.Body)
+
+	var user model.User
+	err := decoder.Decode(&user)
+	if err != nil {
+		c.log.Error(fmt.Sprintf("Unable to decode user email JSON: %v \n", err))
+	}
 
 	err = c.userRepo.Create(&user)
 	if err != nil {

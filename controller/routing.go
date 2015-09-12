@@ -19,8 +19,8 @@ type Route struct {
 var root string
 
 func NewRouter(c *Controller, rt string) *mux.Router {
-    root = rt
-    
+	root = rt
+
 	r := mux.NewRouter()
 	routes := createRoutes(c)
 
