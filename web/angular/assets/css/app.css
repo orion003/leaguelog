@@ -1,0 +1,90 @@
+.landing-upper {
+    background-color: #333333;
+    padding-bottom: 4em;
+}
+
+.landing-outer-circle {
+    border: 1.6em solid #470909;
+    height:60em;
+    width:60em;
+    -webkit-border-radius:30em;
+    -moz-border-radius:30em;
+    border-radius:30em;
+    position: absolute;
+    top: -25em;
+    left: 50%;
+    margin-left: -30em;
+}
+
+.landing-inner-circle {
+    border: 1.6em solid #470909;
+    background-color: #470909;
+    height:15em;
+    width:15em;
+    -webkit-border-radius:7.5em;
+    -moz-border-radius:7.5em;
+    border-radius:7.5em;
+    position: absolute;
+    top: -6em;
+    left: 50%;
+    margin-left: -7.5em;
+}
+
+.landing-header {
+    padding: 16em 0 0;
+    text-align: center;
+}
+
+h1 {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 8em;
+    font-weight: 300;
+    margin: 0;
+}
+
+h1 a, h1 a:link, h1 a:hover {
+    color: #E0E0E0;
+}
+
+.landing-tagline {
+    margin-bottom: 8em;
+}
+
+h2 {
+    color: #A0A0A0;
+    font-size: 3.6em;
+    margin-top: 0;
+}
+
+.landing-form input {
+    font-size: 2.6em;
+    margin-bottom: 0.4em;
+    padding: 1.2em 0.6em;
+}
+
+.button {
+    background-color: #112347;
+    border: thin solid #CFCFCF;
+    color: #EFEFEF;
+    font-size: 2.6em;
+    padding: 0.4em 1.6em;
+}
+
+.landing-lower-header {
+    background-color: #112347;
+    padding: 2em;
+    margin-bottom: 1.6em;
+}
+
+h3 {
+    color: #CFCFCF;
+    font-size: 3em;
+}
+
+.landing-features {
+    font-size: 2.6em;
+}
+
+.list-group-item {
+    margin: 0.6em 0;
+}

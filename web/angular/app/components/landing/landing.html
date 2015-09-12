@@ -1,7 +1,66 @@
-<div>
-    <form name="landingForm" novalidate>
-        E-mail: <input type="email" data-ng-model="user.email" /><br />
-        <input type="submit" data-ng-click="landing.saveUser(user)" value="Save" />
-    </form>
-    <pre>form = {{user | json}}</pre>
+<div class="landing-upper">
+    <div class="landing-outer-circle"></div>
+    <div class="landing-inner-circle"></div>
+
+    <div class="row landing-header">
+        <div class="small-12 columns text-center landing-name">
+            <h1><a href="#">rec league app</a></h1>
+        </div>
+    </div>
+    
+    <div class="row landing-tagline">
+        <div class="small-12 columns text-center">
+            <h2>be a better commish</h2>
+        </div>
+    </div>
+    
+    <div>
+        <form name="landingForm" novalidate>
+            <div class="row landing-form">
+                <div class="small-10 small-centered columns">
+                    <input type="email" placeholder="enter your email for an early invite" data-ng-model="landing.user.email" class="radius" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="small-6 small-centered text-center columns">
+                    <a href="" data-ng-click="landing.saveUser(landing.user)" class="button radius">submit</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="landing-lower">
+    <div class="row landing-lower-header">
+        <div class="small-12 columns text-center">
+            <h3>manage your sports league</h3>
+        </div>
+    </div>
+    
+    <div class="landing-features">
+        <div class="row">
+            <div class="small-12 columns">
+                <div class="row">
+                    <div class="small-6 columns">
+                        <div class="row">
+                            <div class="small-10 small-centered columns list-group">
+                                <div class="list-group-item"><i class="fa fa-calendar fa-fw"></i>&nbsp; Schedule</div>
+                                <div class="list-group-item"><i class="fa fa-envelope fa-fw"></i>&nbsp; Communicate</div>
+                                <div class="list-group-item"><i class="fa fa-bars fa-fw"></i>&nbsp; Standings</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="small-6 columns">
+                        <div class="row">
+                            <div class="small-10 small-centered columns list-group">
+                                <div class="list-group-item"><i class="fa fa-bar-chart fa-fw"></i>&nbsp; Stats</div>
+                                <div class="list-group-item"><i class="fa fa-cog fa-fw"></i>&nbsp; Commish Tools</div>
+                                <div class="list-group-item"><i class="fa fa-bullhorn fa-fw"></i>&nbsp; Scores</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

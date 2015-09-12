@@ -1,11 +1,10 @@
 angular.module('landing')
-    .service('LandingService', ['$http', function($http) {
+    .service('LandingService', ['$http', '$log', function($http, $log) {
             
             this.saveUser = function(user) {
-                return $http.post('/user', user);  
+                $log.info("User: " + JSON.stringify(user))
+                
+                return $http.post('/users', user);  
             };
             
-            this.getUsers = function() {
-                return $http.get('/users');
-            };
     }]);
