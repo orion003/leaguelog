@@ -1,0 +1,22 @@
+<div class="row landing-error">
+    <div data-ng-show="landingForm.$submitted || landingForm.uEmail.$touched">
+        <div class="small-10 small-centered text-center columns landing-error-text" ng-show="landingForm.uEmail.$error.email">invalid email format - try again</div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-12 columns">
+        <form name="landingForm" novalidate>
+            <div class="row landing-form">
+                <div class="small-10 small-centered columns collapse">
+                    <input type="email" name="uEmail" placeholder="enter your email for an early invite" data-ng-model="landing.user.email" class="radius" required />
+                </div>
+            </div>
+            <div class="row">
+                <div class="small-6 text-center small-centered columns">
+                    <input type="submit" data-ng-click="landingForm.$valid && landing.saveUser(landing.user)" class="button radius" value="submit" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -14,20 +14,7 @@
         </div>
     </div>
     
-    <div>
-        <form name="landingForm" novalidate>
-            <div class="row landing-form">
-                <div class="small-10 small-centered columns">
-                    <input type="email" placeholder="enter your email for an early invite" data-ng-model="landing.user.email" class="radius" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="small-6 small-centered text-center columns">
-                    <a href="" data-ng-click="landing.saveUser(landing.user)" class="button radius">submit</a>
-                </div>
-            </div>
-        </form>
-    </div>
+    <div data-ui-view class="fade"></div>
 </div>
 
 <div class="landing-lower">
