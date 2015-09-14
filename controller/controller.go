@@ -53,19 +53,20 @@ func (c *Controller) AddEmail(w http.ResponseWriter, r *http.Request) {
 	var user model.User
 	err := decoder.Decode(&user)
 	if err != nil {
-		c.log.Error(fmt.Sprintf("Unable to decode user email JSON: %v \n", err))
-	}
-
-	err = c.userRepo.Create(&user)
-	if err != nil {
-		c.log.Error(fmt.Sprintf("AddEmail error: %v ", err))
+		c.log.Error(fmt.Sprintf("Unable to decode user email JSON: %v", err))
 		w.WriteHeader(http.StatusNotAcceptable)
-
-		if e := json.NewEncoder(w).Encode(jsonError(err)); e != nil {
-			c.log.Error(e.Error())
-		}
 	} else {
-		w.WriteHeader(http.StatusCreated)
+    	err = c.userRepo.Create(&user)
+    	if err != nil {
+    		c.log.Error(fmt.Sprintf("AddEmail error: %v", err))
+    		w.WriteHeader(http.StatusNotAcceptable)
+    
+    		if e := json.NewEncoder(w).Encode(jsonError(err)); e != nil {
+    			c.log.Error(e.Error())
+    		}
+    	} else {
+    		w.WriteHeader(http.StatusCreated)
+    	}
 	}
 }
 
