@@ -1,43 +1,47 @@
+.body {
+    font-size: 1em;
+}
+
 .landing-upper {
     background-color: #333333;
-    padding-bottom: 4em;
+    padding-bottom: 1em;
 }
 
 .landing-outer-circle {
-    border: 1.6em solid #470909;
-    height:60em;
-    width:60em;
-    -webkit-border-radius:30em;
-    -moz-border-radius:30em;
-    border-radius:30em;
+    border: 1em solid #470909;
+    height: 24em;
+    width: 24em;
+    -webkit-border-radius: 12em;
+    -moz-border-radius: 12em;
+    border-radius: 12em;
     position: absolute;
-    top: -25em;
+    top: -12em;
     left: 50%;
-    margin-left: -30em;
+    margin-left: -12em;
 }
 
 .landing-inner-circle {
-    border: 1.6em solid #470909;
+    border: 1em solid #470909;
     background-color: #470909;
-    height:15em;
-    width:15em;
-    -webkit-border-radius:7.5em;
-    -moz-border-radius:7.5em;
-    border-radius:7.5em;
+    height: 6em;
+    width: 6em;
+    -webkit-border-radius: 3em;
+    -moz-border-radius: 3em;
+    border-radius: 3em;
     position: absolute;
-    top: -6em;
+    top: -3.5em;
     left: 50%;
-    margin-left: -7.5em;
+    margin-left: -3em;
 }
 
 .landing-header {
-    padding: 16em 0 0;
+    padding: 4em 0 0;
     text-align: center;
 }
 
 h1 {
-    font-family: 'Roboto Condensed', sans-serif;
-    font-size: 8em;
+    font-family: 'Architects Daughter', cursive;
+    font-size: 3em;
     font-weight: 300;
     margin: 0;
 }
@@ -47,24 +51,30 @@ h1 a, h1 a:link, h1 a:hover {
 }
 
 .landing-tagline {
-    margin-bottom: 8em;
+    margin-bottom: 3.4em;
+    text-align: center;
 }
 
 h2 {
     color: #A0A0A0;
-    font-size: 3.6em;
+    font-size: 1.4em;
     margin-top: 0;
 }
 
+.form-view-container {
+    height: 7em;
+}
+
 .landing-success {
-    font-size: 2.6em;
     background-color: #b3e1bc;
     padding: 1em 0;
     font-weight: bold;
+    position: relative;
+    top: 25%;
 }
 
 .landing-error {
-    margin-bottom: 0.4em;
+    height: 2em;
     padding-left: 0.975em;
     padding-right: 0.975em;
 }
@@ -72,40 +82,138 @@ h2 {
 .landing-error-text {
     background-color: #470909;
     color: #E0E0E0;
-    font-size: 2.6em;
     padding: 0.2em;
-    font-weight: bold;
 }
 
 .landing-form input {
-    font-size: 2.6em;
     margin-bottom: 0.4em;
-    padding: 1.2em 0.6em;
+    padding: 1em 0.4em;
 }
 
 .button {
     background-color: #112347;
     border: thin solid #CFCFCF;
     color: #EFEFEF;
-    font-size: 2.6em;
-    padding: 0.4em 1.6em;
+    padding: 0.4em 1.2em;
 }
 
 .landing-lower-header {
     background-color: #112347;
-    padding: 2em;
-    margin-bottom: 1.6em;
+    padding: 0.6em;
+    margin-bottom: 1em;
+}
+
+.landing-features {
+    font-size: 0.9em;
 }
 
 h3 {
     color: #CFCFCF;
-    font-size: 3em;
-}
-
-.landing-features {
-    font-size: 2.6em;
+    font-size: 1.2em;
 }
 
 .list-group-item {
-    margin: 0.6em 0;
+    margin: 0.4em 0;
+}
+
+@media only screen and (min-width: 40.063em) {
+    h1 {
+        font-size: 5em;
+        line-height: 1.1;
+    }
+    
+    .landing-header {
+        padding-bottom: 0em;
+        padding-top: 1em;
+    }
+    
+    h2 {
+        font-size: 2.6em;
+    }
+    
+    .landing-tagline {
+        margin-bottom: 1.4em;
+    }
+    
+    .landing-form input {
+        font-size: 1.4em;
+    }
+    
+    .button {
+        font-size: 1.4em;
+    }
+    
+    .form-view-container {
+        height: 8em;
+    }  
+    
+    h3 {
+        font-size: 1.6em;
+    }
+    
+    .landing-features {
+        font-size: 1.4em;
+    }
+}
+
+@media only screen and (min-width: 64.063em) { 
+    .landing-outer-circle {
+        border: 1.4em solid #470909;
+        height: 30em;
+        width: 30em;
+        -webkit-border-radius: 15em;
+        -moz-border-radius: 15em;
+        border-radius: 15em;
+        position: absolute;
+        top: -15em;
+        left: 50%;
+        margin-left: -15em;
+    }
+    
+    .landing-inner-circle {
+        border: 1em solid #470909;
+        background-color: #470909;
+        height: 6em;
+        width: 6em;
+        -webkit-border-radius: 3em;
+        -moz-border-radius: 3em;
+        border-radius: 3em;
+        position: absolute;
+        top: -3.5em;
+        left: 50%;
+        margin-left: -3em;
+    }
+    
+    h1 {
+        font-size: 8em;
+        line-height: 0.7;
+    }
+    
+    .landing-header {
+        padding-bottom: 0em;
+        padding-top: 8em;
+    }
+    
+    .landing-tagline {
+        margin-bottom: 4em;
+        padding-left: 3em;
+        text-align: left;
+    }
+    
+    .form-view-container {
+        margin-bottom: 4em;
+    } 
+    
+    .landing-lower-header {
+        margin-bottom: 2em;
+        max-width: none;
+    }
+    
+    h3 {
+        font-size: 2em  ;
+    }
+    
+    .landing-features {
+        font-size: 2em;
+    }
 }

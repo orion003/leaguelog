@@ -13,6 +13,9 @@ angular.module('landing')
                         if(response.data.error == 'user_duplicate_email') {
                             $state.go('landing.duplicate');
                         }
+                        else {
+                            
+                        }
                     });
             };
     }]);
