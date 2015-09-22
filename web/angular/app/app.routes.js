@@ -4,7 +4,9 @@ angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locati
             .state('landing', {
                 url: '',
                 abstract: true,
-                templateUrl: '/app/components/landing/landing.html'
+                templateUrl: '/app/components/landing/landing.html',
+                controller: 'LandingController',
+                controllerAs: 'landing'
             })
             .state('landing.form', {
                 url: '/',
@@ -16,10 +18,14 @@ angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locati
                 controllerAs: 'landing'
             })
             .state('landing.success', {
-                templateUrl: '/app/components/landing/landing.success.html'
+                templateUrl: '/app/components/landing/landing.success.html',
+                controller: 'LandingController',
+                controllerAs: 'landing'
             })
             .state('landing.duplicate', {
-                templateUrl: '/app/components/landing/landing.duplicate.html'
+                templateUrl: '/app/components/landing/landing.duplicate.html',
+                controller: 'LandingController',
+                controllerAs: 'landing'
             });
             
         $urlRouterProvider.otherwise('/');

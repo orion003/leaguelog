@@ -1,15 +1,12 @@
 angular.module('landing')
-    .controller('LandingController', ['$state', 'LandingService', 'user', '$log',
-        function($state, LandingService, user, $log){
-            this.user = user.data;
-
+    .controller('LandingController', ['$state', 'LandingService', '$log',
+        function($state, LandingService, $log){
             this.saveUser = function() {
                 LandingService.saveUser(this.user).then(
                     function(response) {
                         $state.go('landing.success');
                     }, 
                     function(response) {
-                        $log.info(response.data);
                         if(response.data.error == 'user_duplicate_email') {
                             $state.go('landing.duplicate');
                         }
@@ -17,5 +14,9 @@ angular.module('landing')
                             
                         }
                     });
+            };
+            
+            this.reload = function() {
+                $state.go('landing.form');
             };
     }]);
