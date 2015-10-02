@@ -1,6 +1,6 @@
-angular.module("landing", []);
+angular.module("home", []);
 
 angular.module('rlApp', [
     'ui.router',
     'ngAnimate',
-    'landing']);
+    'home']);

@@ -1,31 +1,27 @@
 angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
     function($stateProvider, $urlRouterProvider, $locationProvider) {
         $stateProvider
-            .state('landing', {
-                url: '',
-                abstract: true,
-                templateUrl: '/app/components/landing/landing.html',
-                controller: 'LandingController',
-                controllerAs: 'landing'
-            })
-            .state('landing.form', {
+            .state('home', {
                 url: '/',
-                resolve: {
-                    user: function() { return {}; }
-                },
-                templateUrl: '/app/components/landing/landing.form.html',
-                controller: 'LandingController',
-                controllerAs: 'landing'
+                views: {
+                    '': {
+                        templateUrl: '/app/components/home/home.html'
+                    },
+                    'search@home': {
+                        templateUrl: '/app/components/home/home.search.html',
+                        controller: 'HomeSearchController',
+                        controllerAs: 'home'
+                    },
+                    'register@home': {
+                        templateUrl: '/app/components/home/home.register.html',
+                        controller: 'HomeRegisterController',
+                        controllerAs: 'home'
+                    }
+                }
             })
-            .state('landing.success', {
-                templateUrl: '/app/components/landing/landing.success.html',
-                controller: 'LandingController',
-                controllerAs: 'landing'
-            })
-            .state('landing.duplicate', {
-                templateUrl: '/app/components/landing/landing.duplicate.html',
-                controller: 'LandingController',
-                controllerAs: 'landing'
+            .state('screen', {
+                url: '/screen',
+                templateUrl: '/app/components/screen/screen.html'
             });
             
         $urlRouterProvider.otherwise('/');
