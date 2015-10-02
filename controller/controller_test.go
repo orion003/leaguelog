@@ -24,11 +24,11 @@ func init() {
 	controller = NewController(log)
 	initializeRepos()
 
-	server = httptest.NewServer(NewRouter(controller))
+	server = httptest.NewServer(NewRouter(controller, ""))
 }
 
-func TestAddEmail2(t *testing.T) {
-	err := addEmail("test3@test.com")
+func TestAddEmail(t *testing.T) {
+	err := addEmail("test@test.com")
 	if err != nil {
 		t.Error(err)
 	}
@@ -66,7 +66,7 @@ func TestInvalidEmail(t *testing.T) {
 }
 
 func addEmail(email string) error {
-	u := fmt.Sprintf("%s/users", server.URL)
+	u := fmt.Sprintf("%s/api/users", server.URL)
 
 	v := url.Values{}
 	v.Set("email", email)
@@ -102,6 +102,48 @@ func addEmail(email string) error {
 	}
 
 	return nil
+}
+
+func TestGetLeagues(t *testing.T) {
+    l1 := &model.League{
+        Name: "Test League 1",
+        Sport: "Sport 1",
+    }
+    err := controller.leagueRepo.Create(l1)
+    
+    l2 := &model.League{
+        Name: "Test League 2",
+        Sport: "Sport 2",
+    }
+    err = controller.leagueRepo.Create(l2)
+    
+    u := fmt.Sprintf("%s/api/leagues", server.URL)
+
+	res, err := http.DefaultClient.Get(u)
+	if err != nil {
+		fmt.Printf("Unable to access %s: %v\n", err);
+	}
+
+	defer res.Body.Close()
+	
+	controller.log.Info(fmt.Sprintf("HTTP Status: %d", res.StatusCode))
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Printf("Unable to read body: %v\n", u, err);
+	}
+	
+    leagues := make([]model.League, 2)
+	if len(body) > 0 {
+		err = json.Unmarshal(body, &leagues)
+		if err != nil {
+			fmt.Printf("Unable to unmarshal JSON: %v\n", err);
+		}
+	}
+	
+	if(len(leagues) != 2) {
+	    t.Errorf("Incorrect number of leagues. Found %d, should be %d", len(leagues), 2)   
+	}
 }
 
 func initializeRepos() {

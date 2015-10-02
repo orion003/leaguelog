@@ -33,42 +33,42 @@ type UserRepository interface {
 }
 
 type Model struct {
-	Id       int
-	Created  time.Time
-	Modified time.Time
+	Id       int       `json:"id"`
+	Created  time.Time `json:"created"`
+	Modified time.Time `json:"modified"`
 }
 
 type League struct {
-	Model
-	Name  string
-	Sport string
+	Model `json:"model"`
+	Name  string `json:"name"`
+	Sport string `json:"sport"`
 }
 
 type Season struct {
-	Model
-	League     *League
-	Name       string
-	Start_date time.Time
-	End_date   time.Time
+	Model      `json:"model"`
+	League     *League   `json:"league"`
+	Name       string    `json:"name"`
+	Start_date time.Time `json:"start_date"`
+	End_date   time.Time `json:"end_date"`
 }
 
 type Team struct {
-	Model
-	League *League
-	Name   string
+	Model  `json:"model"`
+	League *League `json:"league"`
+	Name   string  `json:"name"`
 }
 
 type Game struct {
-	Model
-	Season     *Season
-	Start_time time.Time
-	Home_team  *Team
-	Away_team  *Team
-	Home_score int
-	Away_score int
+	Model      `json:"model"`
+	Season     *Season   `json:"season"`
+	Start_time time.Time `json:"start_time"`
+	Home_team  *Team     `json:"home_team"`
+	Away_team  *Team     `json:"away_team"`
+	Home_score int       `json:"home_score"`
+	Away_score int       `json:"away_score"`
 }
 
 type User struct {
-	Model
-	Email string
+	Model `json:"model"`
+	Email string `json:"email"`
 }

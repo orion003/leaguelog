@@ -56,17 +56,33 @@ func (c *Controller) AddEmail(w http.ResponseWriter, r *http.Request) {
 		c.log.Error(fmt.Sprintf("Unable to decode user email JSON: %v", err))
 		w.WriteHeader(http.StatusNotAcceptable)
 	} else {
-    	err = c.userRepo.Create(&user)
-    	if err != nil {
-    		c.log.Error(fmt.Sprintf("AddEmail error: %v", err))
-    		w.WriteHeader(http.StatusNotAcceptable)
-    
-    		if e := json.NewEncoder(w).Encode(jsonError(err)); e != nil {
-    			c.log.Error(e.Error())
-    		}
-    	} else {
-    		w.WriteHeader(http.StatusCreated)
-    	}
+		err = c.userRepo.Create(&user)
+		if err != nil {
+			c.log.Error(fmt.Sprintf("AddEmail error: %v", err))
+			w.WriteHeader(http.StatusNotAcceptable)
+
+			if e := json.NewEncoder(w).Encode(jsonError(err)); e != nil {
+				c.log.Error(e.Error())
+			}
+		} else {
+			w.WriteHeader(http.StatusCreated)
+		}
+	}
+}
+
+func (c *Controller) GetLeagues(w http.ResponseWriter, r *http.Request) {
+	leagues, err := c.leagueRepo.FindAll()
+	if err != nil {
+		c.log.Error(err.Error())
+	}
+	
+	c.log.Info(fmt.Sprintf("Leagues found: %d", len(leagues)))
+
+	if err = json.NewEncoder(w).Encode(leagues); err != nil {
+		c.log.Error(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+	} else {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	}
 }
 

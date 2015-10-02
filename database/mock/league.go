@@ -25,7 +25,7 @@ func (repo *MockLeagueRepository) Create(league *model.League) error {
 	id := repo.lastId + 1
 	league.Id = id
 	repo.lastId = id
-
+	
 	t := time.Now()
 	league.Created = t
 	league.Modified = t
@@ -36,7 +36,7 @@ func (repo *MockLeagueRepository) Create(league *model.League) error {
 }
 
 func (repo *MockLeagueRepository) FindAll() ([]model.League, error) {
-	leagues := make([]model.League, len(repo.mocks))
+	leagues := make([]model.League, 0, len(repo.mocks))
 
 	for _, league := range repo.mocks {
 		if l, ok := league.(*model.League); ok {

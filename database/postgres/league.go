@@ -55,7 +55,7 @@ func (repo *PgLeagueRepository) FindAll() ([]model.League, error) {
 		}
 
 		if leagues == nil {
-			leagues = make([]model.League, 1, 10)
+			leagues = make([]model.League, 0, 1)
 		}
 
 		leagues = append(leagues, *league)
