@@ -10,7 +10,7 @@
         <div class="league-list">
             <ul class="no-bullet">
                 <li data-ng-repeat="league in home.leagues">
-                    <a href="#" class="{{league.sport}}">{{league.name}}</a>
+                    <a data-ui-sref="league({id:league.model.id})" class="{{league.sport}}">{{league.name}}</a>
                 </li>
             </ul>
         </div>

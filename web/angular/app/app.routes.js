@@ -19,6 +19,24 @@ angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locati
                     }
                 }
             })
+            .state('league', {
+                'url': '/l/{id:int}',
+                views: {
+                    '': {
+                        templateUrl: '/app/components/league/league.html'
+                    },
+                    'standings@league': {
+                        templateUrl: '/app/components/league/league.standings.html',
+                        controller: 'LeagueStandingsController',
+                        controllerAs: 'league'
+                    },
+                    'schedule@league': {
+                        templateUrl: '/app/components/league/league.schedule.html',
+                        controller: 'LeagueScheduleController',
+                        controllerAs: 'league'
+                    }
+                }
+            })
             .state('screen', {
                 url: '/screen',
                 templateUrl: '/app/components/screen/screen.html'
