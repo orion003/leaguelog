@@ -67,7 +67,7 @@ func TestInvalidEmail(t *testing.T) {
 }
 
 func addEmail(email string) error {
-    data := fmt.Sprintf("{\"email\": \"%s\"}", email)
+	data := fmt.Sprintf("{\"email\": \"%s\"}", email)
 
 	body, err := post("/api/users", data)
 
@@ -184,6 +184,13 @@ func TestGetStandings(t *testing.T) {
 	expectedCount := 2
 	if len(standings) != expectedCount {
 		t.Errorf("Incorrect number of standings. Found %d, should be %d", len(standings), expectedCount)
+	}
+
+	for _, standing := range standings {
+		teamName := standing.Team.Name
+		if teamName != t1.Name && teamName != t2.Name {
+			t.Errorf("Team name does not match either team: %s", teamName)
+		}
 	}
 }
 

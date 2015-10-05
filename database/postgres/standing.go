@@ -40,8 +40,10 @@ func (repo *PgStandingRepository) Create(standing *model.Standing) error {
 }
 
 func (repo *PgStandingRepository) FindAllBySeason(season *model.Season) ([]model.Standing, error) {
-	rows, err := repo.manager.db.Query(`SELECT s.id, s.season_id, s.team_id, s.wins, s.losses, s.ties, s.created, s.modified 
+	rows, err := repo.manager.db.Query(`SELECT s.id, s.season_id, s.wins, s.losses, s.ties, s.created, s.modified,
+	        t.id, t.league_id, t.name, t.created, t.modified
         FROM standing s
+        INNER JOIN team t ON s.team_id = t.id
         WHERE s.season_id = $1`, season.Id)
 
 	if err != nil {

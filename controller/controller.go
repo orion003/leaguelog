@@ -58,7 +58,7 @@ func (c *Controller) SetUserRepository(repo model.UserRepository) {
 func (c *Controller) AddEmail(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
-	
+
 	var user model.User
 	err := decoder.Decode(&user)
 	if err != nil {
