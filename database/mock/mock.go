@@ -11,4 +11,5 @@ type MockLeagueRepository MockRepository
 type MockSeasonRepository MockRepository
 type MockGameRepository MockRepository
 type MockTeamRepository MockRepository
+type MockStandingRepository MockRepository
 type MockUserRepository MockRepository

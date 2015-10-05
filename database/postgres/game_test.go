@@ -45,10 +45,10 @@ func testCreateGame(t *testing.T) {
 	if persistedGame.Season == nil {
 		t.Error("Season should never be nil")
 	}
-	if persistedGame.Home_team == nil {
+	if persistedGame.HomeTeam == nil {
 		t.Error("Home team should never be nil")
 	}
-	if persistedGame.Away_team == nil {
+	if persistedGame.AwayTeam == nil {
 		t.Error("Away team should never be nil")
 	}
 

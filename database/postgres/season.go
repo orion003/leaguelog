@@ -26,7 +26,7 @@ func (repo *PgSeasonRepository) Create(season *model.Season) error {
 	var id int
 	err = repo.manager.db.QueryRow(`INSERT INTO season(league_id, name, start_date, end_date, created, modified) 
 	    VALUES($1, $2, $3, $4, $5, $6) RETURNING id`,
-		season.League.Id, season.Name, season.Start_date, season.End_date, t, t).Scan(&id)
+		season.League.Id, season.Name, season.StartDate, season.EndDate, t, t).Scan(&id)
 
 	if err != nil {
 		return err
@@ -50,4 +50,19 @@ func (repo *PgSeasonRepository) FindById(id int) (*model.Season, error) {
 	}
 
 	return season, nil
+}
+
+func (repo *PgSeasonRepository) FindMostRecentByLeague(league *model.League) (*model.Season, error) {
+	row := repo.manager.db.QueryRow(`SELECT s.id, s.league_id, s.name, s.start_date, s.end_date, s.created, s.modified
+        FROM season s
+        WHERE s.league_id = $1
+        ORDER BY s.end_data DESC
+        LIMIT 1`, league.Id)
+
+	season, err := marshal.Season(row)
+	if err != nil {
+		return &model.Season{}, err
+	}
+
+	return season, err
 }

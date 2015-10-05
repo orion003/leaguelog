@@ -26,7 +26,7 @@ func (repo *PgGameRepository) Create(game *model.Game) error {
 	var id int
 	err = repo.manager.db.QueryRow(`INSERT INTO game(season_id, start_time, home_team_id, away_team_id, created, modified) 
 	    VALUES($1, $2, $3, $4, $5, $6) RETURNING id`,
-		game.Season.Id, game.Start_time, game.Home_team.Id, game.Away_team.Id, t, t).Scan(&id)
+		game.Season.Id, game.StartTime, game.HomeTeam.Id, game.AwayTeam.Id, t, t).Scan(&id)
 
 	if err != nil {
 		return err

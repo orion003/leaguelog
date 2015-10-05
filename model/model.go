@@ -13,11 +13,17 @@ type LeagueRepository interface {
 type SeasonRepository interface {
 	Create(season *Season) error
 	FindById(id int) (*Season, error)
+	FindMostRecentByLeague(league *League) (*Season, error)
 }
 
 type TeamRepository interface {
 	Create(team *Team) error
 	FindById(id int) (*Team, error)
+}
+
+type StandingRepository interface {
+	Create(standing *Standing) error
+	FindAllBySeason(season *Season) ([]Standing, error)
 }
 
 type GameRepository interface {
@@ -45,11 +51,11 @@ type League struct {
 }
 
 type Season struct {
-	Model      `json:"model"`
-	League     *League   `json:"league"`
-	Name       string    `json:"name"`
-	Start_date time.Time `json:"start_date"`
-	End_date   time.Time `json:"end_date"`
+	Model     `json:"model"`
+	League    *League   `json:"league"`
+	Name      string    `json:"name"`
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
 }
 
 type Team struct {
@@ -58,14 +64,23 @@ type Team struct {
 	Name   string  `json:"name"`
 }
 
+type Standing struct {
+	Model  `json:"model"`
+	Season *Season `json:"season"`
+	Team   *Team   `json:"team"`
+	Wins   int     `json:"wins"`
+	Losses int     `json:"losses"`
+	Ties   int     `json:"ties"`
+}
+
 type Game struct {
-	Model      `json:"model"`
-	Season     *Season   `json:"season"`
-	Start_time time.Time `json:"start_time"`
-	Home_team  *Team     `json:"home_team"`
-	Away_team  *Team     `json:"away_team"`
-	Home_score int       `json:"home_score"`
-	Away_score int       `json:"away_score"`
+	Model     `json:"model"`
+	Season    *Season   `json:"season"`
+	StartTime time.Time `json:"start_time"`
+	HomeTeam  *Team     `json:"home_team"`
+	AwayTeam  *Team     `json:"away_team"`
+	HomeScore int       `json:"home_score"`
+	AwayScore int       `json:"away_score"`
 }
 
 type User struct {

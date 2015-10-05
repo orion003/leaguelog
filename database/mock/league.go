@@ -25,7 +25,7 @@ func (repo *MockLeagueRepository) Create(league *model.League) error {
 	id := repo.lastId + 1
 	league.Id = id
 	repo.lastId = id
-	
+
 	t := time.Now()
 	league.Created = t
 	league.Modified = t

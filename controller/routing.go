@@ -35,7 +35,7 @@ func NewRouter(c *Controller, rt string) *mux.Router {
 
 	r.PathPrefix("/app/").Handler(http.StripPrefix("/app/", http.FileServer(http.Dir(root+"app/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir(root+"assets/"))))
-	
+
 	return r
 }
 
@@ -54,10 +54,22 @@ func createRoutes(c *Controller) []Route {
 			indexHandler,
 		},
 		Route{
+			"Screen",
+			"GET",
+			"/l/{id:[0-9]+}",
+			indexHandler,
+		},
+		Route{
 			"Leagues",
 			"GET",
 			"/api/leagues",
 			c.GetLeagues,
+		},
+		Route{
+			"League.Standings",
+			"GET",
+			"/api/league/{id:[0-9]+}/standings",
+			c.GetLeagueStandings,
 		},
 		Route{
 			"AddEmail",

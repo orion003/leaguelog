@@ -46,3 +46,17 @@ func (repo *MockSeasonRepository) FindById(id int) (*model.Season, error) {
 
 	return nil, fmt.Errorf("Season id not found: %d", id)
 }
+
+func (repo *MockSeasonRepository) FindMostRecentByLeague(league *model.League) (*model.Season, error) {
+	var recentSeason *model.Season
+
+	for _, season := range repo.mocks {
+		if s, ok := season.(*model.Season); ok {
+			if s.League.Id == league.Id && (recentSeason == nil || s.EndDate.After(recentSeason.EndDate)) {
+				recentSeason = s
+			}
+		}
+	}
+
+	return recentSeason, nil
+}

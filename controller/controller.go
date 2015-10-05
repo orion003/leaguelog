@@ -4,17 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 
 	"recleague/logging"
 	"recleague/model"
 )
 
 type Controller struct {
-	leagueRepo model.LeagueRepository
-	seasonRepo model.SeasonRepository
-	teamRepo   model.TeamRepository
-	gameRepo   model.GameRepository
-	userRepo   model.UserRepository
+	leagueRepo   model.LeagueRepository
+	seasonRepo   model.SeasonRepository
+	teamRepo     model.TeamRepository
+	standingRepo model.StandingRepository
+	gameRepo     model.GameRepository
+	userRepo     model.UserRepository
 
 	log logging.Logger
 }
@@ -39,6 +43,10 @@ func (c *Controller) SetTeamRepository(repo model.TeamRepository) {
 	c.teamRepo = repo
 }
 
+func (c *Controller) SetStandingRepository(repo model.StandingRepository) {
+	c.standingRepo = repo
+}
+
 func (c *Controller) SetGameRepository(repo model.GameRepository) {
 	c.gameRepo = repo
 }
@@ -49,7 +57,8 @@ func (c *Controller) SetUserRepository(repo model.UserRepository) {
 
 func (c *Controller) AddEmail(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-
+	defer r.Body.Close()
+	
 	var user model.User
 	err := decoder.Decode(&user)
 	if err != nil {
@@ -75,7 +84,7 @@ func (c *Controller) GetLeagues(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		c.log.Error(err.Error())
 	}
-	
+
 	c.log.Info(fmt.Sprintf("Leagues found: %d", len(leagues)))
 
 	if err = json.NewEncoder(w).Encode(leagues); err != nil {
@@ -84,6 +93,32 @@ func (c *Controller) GetLeagues(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	}
+}
+
+func (c *Controller) GetLeagueStandings(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	leagueId, err := strconv.Atoi(vars["id"])
+
+	league := &model.League{Model: model.Model{Id: leagueId}}
+	season, err := c.seasonRepo.FindMostRecentByLeague(league)
+	standings, err := c.standingRepo.FindAllBySeason(season)
+
+	err = c.jsonResponse(w, standings)
+	if err != nil {
+		c.log.Error("Unable to get league standings: %v", err)
+	}
+}
+
+func (c *Controller) jsonResponse(w http.ResponseWriter, v interface{}) error {
+	if err := json.NewEncoder(w).Encode(v); err != nil {
+		c.log.Error(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return err
+	} else {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	}
+
+	return nil
 }
 
 func jsonError(err error) map[string]string {

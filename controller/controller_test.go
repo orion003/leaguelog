@@ -7,8 +7,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
+	"strings"
 	"testing"
+	"time"
 
 	"recleague/database/mock"
 	"recleague/logging"
@@ -66,24 +67,9 @@ func TestInvalidEmail(t *testing.T) {
 }
 
 func addEmail(email string) error {
-	u := fmt.Sprintf("%s/api/users", server.URL)
+    data := fmt.Sprintf("{\"email\": \"%s\"}", email)
 
-	v := url.Values{}
-	v.Set("email", email)
-
-	res, err := http.DefaultClient.PostForm(u, v)
-	if err != nil {
-		return err
-	}
-
-	defer res.Body.Close()
-
-	controller.log.Info(fmt.Sprintf("HTTP Status: %d", res.StatusCode))
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
+	body, err := post("/api/users", data)
 
 	if len(body) > 0 {
 		var r map[string]interface{}
@@ -105,57 +91,157 @@ func addEmail(email string) error {
 }
 
 func TestGetLeagues(t *testing.T) {
-    l1 := &model.League{
-        Name: "Test League 1",
-        Sport: "Sport 1",
-    }
-    err := controller.leagueRepo.Create(l1)
-    
-    l2 := &model.League{
-        Name: "Test League 2",
-        Sport: "Sport 2",
-    }
-    err = controller.leagueRepo.Create(l2)
-    
-    u := fmt.Sprintf("%s/api/leagues", server.URL)
+	l1 := &model.League{
+		Name:  "Test League 1",
+		Sport: "Sport 1",
+	}
+	err := controller.leagueRepo.Create(l1)
+
+	l2 := &model.League{
+		Name:  "Test League 2",
+		Sport: "Sport 2",
+	}
+	err = controller.leagueRepo.Create(l2)
+
+	body, err := request("/api/leagues")
+	if err != nil {
+		t.Errorf("Unable to obtain body: %v", err)
+	}
+
+	leagues := make([]model.League, 2)
+	if len(body) > 0 {
+		err = json.Unmarshal(body, &leagues)
+		if err != nil {
+			fmt.Printf("Unable to unmarshal JSON: %v\n", err)
+		}
+	}
+
+	if len(leagues) != 2 {
+		t.Errorf("Incorrect number of leagues. Found %d, should be %d", len(leagues), 2)
+	}
+}
+
+func TestGetStandings(t *testing.T) {
+	l := &model.League{
+		Name:  "Test League 1",
+		Sport: "Sport 1",
+	}
+	err := controller.leagueRepo.Create(l)
+
+	t1 := &model.Team{
+		Name:   "Test Team 1",
+		League: l,
+	}
+	err = controller.teamRepo.Create(t1)
+
+	t2 := &model.Team{
+		Name:   "Test Team 2",
+		League: l,
+	}
+	err = controller.teamRepo.Create(t2)
+
+	startDate := time.Date(2015, time.October, 6, 0, 0, 0, 0, time.UTC)
+	endDate := time.Date(2016, time.April, 24, 0, 0, 0, 0, time.UTC)
+	season := &model.Season{
+		League:    l,
+		Name:      "Test Season 1",
+		StartDate: startDate,
+		EndDate:   endDate,
+	}
+	err = controller.seasonRepo.Create(season)
+
+	s1 := &model.Standing{
+		Season: season,
+		Team:   t1,
+		Wins:   2,
+		Losses: 1,
+		Ties:   1,
+	}
+	err = controller.standingRepo.Create(s1)
+
+	s2 := &model.Standing{
+		Season: season,
+		Team:   t1,
+		Wins:   1,
+		Losses: 2,
+		Ties:   1,
+	}
+	err = controller.standingRepo.Create(s2)
+
+	body, err := request(fmt.Sprintf("/api/league/%d/standings", l.Id))
+	if err != nil {
+		t.Errorf("Unable to obtain body: %v", err)
+	}
+
+	standings := make([]model.Standing, 2)
+	if len(body) > 0 {
+		err = json.Unmarshal(body, &standings)
+		if err != nil {
+			t.Errorf("Unable to unmarshal JSON: %v\n", err)
+		}
+	}
+
+	expectedCount := 2
+	if len(standings) != expectedCount {
+		t.Errorf("Incorrect number of standings. Found %d, should be %d", len(standings), expectedCount)
+	}
+}
+
+func request(rUrl string) ([]byte, error) {
+	u := fmt.Sprintf("%s%s", server.URL, rUrl)
+	controller.log.Info(fmt.Sprintf("Test Request: %s", u))
 
 	res, err := http.DefaultClient.Get(u)
 	if err != nil {
-		fmt.Printf("Unable to access %s: %v\n", err);
+		fmt.Printf("Unable to access %s: %v\n", err)
+		return []byte{}, err
 	}
 
 	defer res.Body.Close()
-	
+
 	controller.log.Info(fmt.Sprintf("HTTP Status: %d", res.StatusCode))
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Printf("Unable to read body: %v\n", u, err);
+		fmt.Printf("Unable to read body: %v\n", u, err)
+		return []byte{}, err
 	}
-	
-    leagues := make([]model.League, 2)
-	if len(body) > 0 {
-		err = json.Unmarshal(body, &leagues)
-		if err != nil {
-			fmt.Printf("Unable to unmarshal JSON: %v\n", err);
-		}
+
+	return body, nil
+}
+
+func post(rUrl string, data string) ([]byte, error) {
+	u := fmt.Sprintf("%s%s", server.URL, rUrl)
+
+	res, err := http.DefaultClient.Post(u, "application/json", strings.NewReader(data))
+	if err != nil {
+		return []byte{}, err
 	}
-	
-	if(len(leagues) != 2) {
-	    t.Errorf("Incorrect number of leagues. Found %d, should be %d", len(leagues), 2)   
+
+	defer res.Body.Close()
+
+	controller.log.Info(fmt.Sprintf("HTTP Status: %d", res.StatusCode))
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return []byte{}, err
 	}
+
+	return body, nil
 }
 
 func initializeRepos() {
 	leagueRepo := mock.NewMockLeagueRepository()
 	seasonRepo := mock.NewMockSeasonRepository()
 	teamRepo := mock.NewMockTeamRepository()
+	standingRepo := mock.NewMockStandingRepository()
 	gameRepo := mock.NewMockGameRepository()
 	userRepo := mock.NewMockUserRepository()
 
 	controller.SetLeagueRepository(leagueRepo)
 	controller.SetSeasonRepository(seasonRepo)
 	controller.SetTeamRepository(teamRepo)
+	controller.SetStandingRepository(standingRepo)
 	controller.SetGameRepository(gameRepo)
 	controller.SetUserRepository(userRepo)
 }

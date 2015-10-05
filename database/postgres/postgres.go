@@ -18,6 +18,7 @@ type PgLeagueRepository PgRepository
 type PgSeasonRepository PgRepository
 type PgGameRepository PgRepository
 type PgTeamRepository PgRepository
+type PgStandingRepository PgRepository
 type PgUserRepository PgRepository
 
 func NewPgManager(url string) (*PgManager, error) {

@@ -20,6 +20,7 @@ var log logging.Logger = logging.NewLog15()
 var leagueRepo *PgLeagueRepository
 var seasonRepo *PgSeasonRepository
 var teamRepo *PgTeamRepository
+var standingRepo *PgStandingRepository
 var gameRepo *PgGameRepository
 var userRepo *PgUserRepository
 
@@ -51,6 +52,7 @@ func TestMain(m *testing.M) {
 	leagueRepo = NewPgLeagueRepository(manager)
 	seasonRepo = NewPgSeasonRepository(manager)
 	teamRepo = NewPgTeamRepository(manager)
+	standingRepo = NewPgStandingRepository(manager)
 	gameRepo = NewPgGameRepository(manager)
 	userRepo = NewPgUserRepository(manager)
 
@@ -71,6 +73,10 @@ func TestSeason(t *testing.T) {
 
 func TestTeam(t *testing.T) {
 	testCreateTeam(t)
+}
+
+func TestStanding(t *testing.T) {
+	testGetStandingBySeason(t)
 }
 
 func TestGame(t *testing.T) {
@@ -101,7 +107,7 @@ func truncateTables() error {
 		return err
 	}
 
-	_, err = db.Exec("TRUNCATE league, season, team, game, user0 RESTART IDENTITY")
+	_, err = db.Exec("TRUNCATE league, season, team, game, user0, standing RESTART IDENTITY")
 	if err != nil {
 		return err
 	}
@@ -127,10 +133,10 @@ func createSeason(repo *PgSeasonRepository, league *model.League) (*model.Season
 	startDate := time.Date(2015, time.October, 6, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(2016, time.April, 24, 0, 0, 0, 0, time.UTC)
 	season := &model.Season{
-		League:     league,
-		Name:       "Test Season",
-		Start_date: startDate,
-		End_date:   endDate,
+		League:    league,
+		Name:      "Test Season",
+		StartDate: startDate,
+		EndDate:   endDate,
 	}
 
 	err := repo.Create(season)
@@ -155,13 +161,30 @@ func createTeam(repo *PgTeamRepository, league *model.League) (*model.Team, erro
 	return team, nil
 }
 
+func createStanding(repo *PgStandingRepository, season *model.Season, team *model.Team) (*model.Standing, error) {
+	standing := &model.Standing{
+		Season: season,
+		Team:   team,
+		Wins:   3,
+		Losses: 3,
+		Ties:   3,
+	}
+
+	err := repo.Create(standing)
+	if err != nil {
+		return nil, err
+	}
+
+	return standing, nil
+}
+
 func createGame(repo *PgGameRepository, season *model.Season, hometeam *model.Team, awayteam *model.Team) (*model.Game, error) {
 	t := time.Date(2015, time.October, 6, 8, 30, 0, 0, time.UTC)
 	game := &model.Game{
-		Season:     season,
-		Start_time: t,
-		Home_team:  hometeam,
-		Away_team:  awayteam,
+		Season:    season,
+		StartTime: t,
+		HomeTeam:  hometeam,
+		AwayTeam:  awayteam,
 	}
 
 	err := repo.Create(game)
