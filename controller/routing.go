@@ -22,6 +22,8 @@ func NewRouter(c *Controller, rt string) *mux.Router {
 	root = rt
 
 	r := mux.NewRouter()
+	r.NotFoundHandler = c
+
 	routes := createRoutes(c)
 
 	for _, route := range routes {
@@ -42,24 +44,6 @@ func NewRouter(c *Controller, rt string) *mux.Router {
 func createRoutes(c *Controller) []Route {
 	routes := []Route{
 		Route{
-			"Index",
-			"GET",
-			"/",
-			indexHandler,
-		},
-		Route{
-			"Screen",
-			"GET",
-			"/screen",
-			indexHandler,
-		},
-		Route{
-			"Screen",
-			"GET",
-			"/l/{id:[0-9]+}",
-			indexHandler,
-		},
-		Route{
 			"Leagues",
 			"GET",
 			"/api/leagues",
@@ -68,8 +52,14 @@ func createRoutes(c *Controller) []Route {
 		Route{
 			"League.Standings",
 			"GET",
-			"/api/league/{id:[0-9]+}/standings",
+			"/api/league/{leagueId:[0-9]+}/standings",
 			c.GetLeagueStandings,
+		},
+		Route{
+			"League.Schedule",
+			"GET",
+			"/api/league/{leagueId:[0-9]+}/schedule",
+			c.GetLeagueSchedule,
 		},
 		Route{
 			"AddEmail",
@@ -80,10 +70,6 @@ func createRoutes(c *Controller) []Route {
 	}
 
 	return routes
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, root+"index.html")
 }
 
 func logger(inner http.Handler, name string, log logging.Logger) http.HandlerFunc {

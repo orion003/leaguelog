@@ -173,7 +173,7 @@ func TestGetStandings(t *testing.T) {
 		t.Errorf("Unable to obtain body: %v", err)
 	}
 
-	standings := make([]model.Standing, 2)
+	standings := []model.Standing{}
 	if len(body) > 0 {
 		err = json.Unmarshal(body, &standings)
 		if err != nil {
@@ -191,6 +191,78 @@ func TestGetStandings(t *testing.T) {
 		if teamName != t1.Name && teamName != t2.Name {
 			t.Errorf("Team name does not match either team: %s", teamName)
 		}
+	}
+}
+
+func TestGetSchedule(t *testing.T) {
+	l := &model.League{
+		Name:  "Test League 1",
+		Sport: "Sport 1",
+	}
+	err := controller.leagueRepo.Create(l)
+
+	t1 := &model.Team{
+		Name:   "Test Team 1",
+		League: l,
+	}
+	err = controller.teamRepo.Create(t1)
+
+	t2 := &model.Team{
+		Name:   "Test Team 2",
+		League: l,
+	}
+	err = controller.teamRepo.Create(t2)
+
+	nextYear := time.Now().Year() + 1
+
+	startDate := time.Date(nextYear, time.October, 6, 0, 0, 0, 0, time.UTC)
+	endDate := time.Date(nextYear+1, time.April, 24, 0, 0, 0, 0, time.UTC)
+	season := &model.Season{
+		League:    l,
+		Name:      "Test Season 1",
+		StartDate: startDate,
+		EndDate:   endDate,
+	}
+	err = controller.seasonRepo.Create(season)
+
+	startDate1 := time.Date(nextYear, time.October, 6, 20, 30, 0, 0, time.UTC)
+	g1 := &model.Game{
+		Season:    season,
+		StartTime: startDate1,
+		HomeTeam:  t1,
+		AwayTeam:  t2,
+		HomeScore: 0,
+		AwayScore: 0,
+	}
+	err = controller.gameRepo.Create(g1)
+
+	startDate2 := time.Date(nextYear, time.October, 8, 19, 15, 0, 0, time.UTC)
+	g2 := &model.Game{
+		Season:    season,
+		StartTime: startDate2,
+		HomeTeam:  t2,
+		AwayTeam:  t1,
+		HomeScore: 0,
+		AwayScore: 0,
+	}
+	err = controller.gameRepo.Create(g2)
+
+	body, err := request(fmt.Sprintf("/api/league/%d/schedule", l.Id))
+	if err != nil {
+		t.Errorf("Unable to obtain body: %v", err)
+	}
+
+	games := []model.Game{}
+	if len(body) > 0 {
+		err = json.Unmarshal(body, &games)
+		if err != nil {
+			t.Errorf("Unable to unmarshal JSON: %v\n", err)
+		}
+	}
+
+	expectedCount := 2
+	if len(games) != expectedCount {
+		t.Errorf("Incorrect number of games. Found %d, should be %d", len(games), expectedCount)
 	}
 }
 

@@ -29,6 +29,7 @@ type StandingRepository interface {
 type GameRepository interface {
 	Create(game *Game) error
 	FindById(id int) (*Game, error)
+	FindUpcomingBySeason(season *Season) ([]Game, error)
 }
 
 type UserRepository interface {

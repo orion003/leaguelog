@@ -46,3 +46,17 @@ func (repo *MockGameRepository) FindById(id int) (*model.Game, error) {
 
 	return nil, fmt.Errorf("Game id not found: %d", id)
 }
+
+func (repo *MockGameRepository) FindUpcomingBySeason(season *model.Season) ([]model.Game, error) {
+	games := make([]model.Game, 0, len(repo.mocks))
+
+	for _, game := range repo.mocks {
+		if g, ok := game.(*model.Game); ok {
+			if g.Season.Id == season.Id && time.Now().Before(g.StartTime) {
+				games = append(games, *g)
+			}
+		}
+	}
+
+	return games, nil
+}

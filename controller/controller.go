@@ -55,6 +55,11 @@ func (c *Controller) SetUserRepository(repo model.UserRepository) {
 	c.userRepo = repo
 }
 
+func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	c.log.Info(fmt.Sprintf("Index Request: %s", r.URL.Path))
+	http.ServeFile(w, r, root+"index.html")
+}
+
 func (c *Controller) AddEmail(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
@@ -97,15 +102,41 @@ func (c *Controller) GetLeagues(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) GetLeagueStandings(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	leagueId, err := strconv.Atoi(vars["id"])
+	leagueId, err := strconv.Atoi(vars["leagueId"])
 
 	league := &model.League{Model: model.Model{Id: leagueId}}
 	season, err := c.seasonRepo.FindMostRecentByLeague(league)
+	if err != nil {
+		c.log.Error(fmt.Sprintf("Error finding season for league %d: %v", league.Id, err))
+	}
 	standings, err := c.standingRepo.FindAllBySeason(season)
+	if err != nil {
+		c.log.Error(fmt.Sprintf("Error finding standings for season %d: %v", season.Id, err))
+	}
 
 	err = c.jsonResponse(w, standings)
 	if err != nil {
 		c.log.Error("Unable to get league standings: %v", err)
+	}
+}
+
+func (c *Controller) GetLeagueSchedule(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	leagueId, err := strconv.Atoi(vars["leagueId"])
+
+	league := &model.League{Model: model.Model{Id: leagueId}}
+	season, err := c.seasonRepo.FindMostRecentByLeague(league)
+	if err != nil {
+		c.log.Error(fmt.Sprintf("Error finding season for league %d: %v", league.Id, err))
+	}
+	games, err := c.gameRepo.FindUpcomingBySeason(season)
+	if err != nil {
+		c.log.Error(fmt.Sprintf("Error finding games for season %d: %v", season.Id, err))
+	}
+
+	err = c.jsonResponse(w, games)
+	if err != nil {
+		c.log.Error("Unable to get league games: %v", err)
 	}
 }
 

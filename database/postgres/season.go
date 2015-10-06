@@ -56,7 +56,7 @@ func (repo *PgSeasonRepository) FindMostRecentByLeague(league *model.League) (*m
 	row := repo.manager.db.QueryRow(`SELECT s.id, s.league_id, s.name, s.start_date, s.end_date, s.created, s.modified
         FROM season s
         WHERE s.league_id = $1
-        ORDER BY s.end_data DESC
+        ORDER BY s.end_date DESC
         LIMIT 1`, league.Id)
 
 	season, err := marshal.Season(row)

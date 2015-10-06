@@ -44,7 +44,8 @@ func (repo *PgStandingRepository) FindAllBySeason(season *model.Season) ([]model
 	        t.id, t.league_id, t.name, t.created, t.modified
         FROM standing s
         INNER JOIN team t ON s.team_id = t.id
-        WHERE s.season_id = $1`, season.Id)
+        WHERE s.season_id = $1
+        ORDER BY s.wins DESC, s.ties DESC, s.losses DESC, t.name ASC`, season.Id)
 
 	if err != nil {
 		return []model.Standing{}, err
@@ -52,7 +53,7 @@ func (repo *PgStandingRepository) FindAllBySeason(season *model.Season) ([]model
 
 	var standings []model.Standing
 	for rows.Next() {
-		standing, err := marshal.Standing(rows)
+		standing, err := marshal.StandingWithTeams(rows)
 		if err != nil {
 			return []model.Standing{}, err
 		}
