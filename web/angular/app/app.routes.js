@@ -20,7 +20,7 @@ angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locati
                 }
             })
             .state('league', {
-                'url': '/l/{id:int}',
+                'url': '/l/{leagueId:int}',
                 views: {
                     '': {
                         templateUrl: '/app/components/league/league.html'
