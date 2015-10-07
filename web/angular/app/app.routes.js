@@ -25,6 +25,11 @@ angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locati
                     '': {
                         templateUrl: '/app/components/league/league.html'
                     },
+                    'header@league': {
+                        templateUrl: '/app/components/league/league.header.html',
+                        controller: 'LeagueHeaderController',
+                        controllerAs: 'league'
+                    },
                     'standings@league': {
                         templateUrl: '/app/components/league/league.standings.html',
                         controller: 'LeagueStandingsController',

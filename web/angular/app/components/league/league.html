@@ -1,7 +1,33 @@
-<p>League Home</p>
-<div data-ui-view="standings">
-    
-</div>
-<div data-ui-view="schedule">
-    
-</div>
+<header class="main-header-row">
+    <div class="row small-uncollapse medium-collapse">
+        <div class="small-12 small-centered small-only-text-center medium-uncentered columns">
+            <a data-ui-sref="home"><h1 class="main-header">leaguelog</h1></a>
+        </div>
+    </div>
+    <div class="row small-uncollapse medium-collapse">
+        <div class="small-12 small-centered medium-uncentered small-only-text-center columns">
+            <h2 class="main-tagline">Be a better commish.</h2>
+        </div>
+    </div>
+</header>
+<section>
+    <div class="row small-uncollapse medium-collapse">
+        <div class="small-12 small-centered small-only-text-center medium-uncentered columns">
+            <div data-ui-view="header"></div>
+        </div>
+    </div>
+</section>
+<section>
+    <div class="row">
+        <div class="small-12 small-centered medium-6 medium-uncentered columns">
+            <div class="main-standings">
+                <div data-ui-view="standings"></div>
+            </div>
+        </div>
+        <div class="small-12 medium-6 columns">
+            <div class="main-schedule">
+                <div data-ui-view="schedule"></div>
+            </div>
+        </div>
+    </div>
+</section>
