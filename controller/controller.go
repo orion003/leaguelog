@@ -100,6 +100,24 @@ func (c *Controller) GetLeagues(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (c *Controller) GetLeague(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	leagueId, err := strconv.Atoi(vars["leagueId"])
+	if err != nil {
+	    c.log.Error("League ID not available: %v", err)   
+	}
+
+	league, err := c.leagueRepo.FindById(leagueId)
+	if err != nil {
+	    c.log.Error("Unable to find league: %v", err)   
+	}
+
+	err = c.jsonResponse(w, league)
+	if err != nil {
+		c.log.Error("Unable to get league: %v", err)
+	}
+}
+
 func (c *Controller) GetLeagueStandings(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	leagueId, err := strconv.Atoi(vars["leagueId"])

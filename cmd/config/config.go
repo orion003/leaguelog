@@ -13,4 +13,5 @@ type Database struct {
 
 type Routing struct {
 	Root string `json:root`
+	Port string `json:port`
 }

@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 
@@ -17,7 +15,11 @@ import (
 var conf config.Config
 
 func main() {
-	initializeConfig()
+	err := initializeConfig()
+	if err != nil {
+	    fmt.Printf("Unable to initialize config: %v\n", err)
+	    os.Exit(1)
+	}
 
 	log := logging.NewLog15()
 	c := controller.NewController(log)
@@ -34,6 +36,7 @@ func main() {
 func initializeRepos(c *controller.Controller) {
 	manager, err := postgres.NewPgManager(conf.Database.Url)
 	if err != nil {
+	    fmt.Printf("Unable to intialize repos: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -53,12 +56,25 @@ func initializeRepos(c *controller.Controller) {
 }
 
 func initializeConfig() error {
-	file, err := ioutil.ReadFile("./_config.json")
-	if err != nil {
-		return errors.New("Unable to open file: _config.json")
-	}
-
-	json.Unmarshal(file, &conf)
+    port := os.Getenv("PORT")
+    if port == "" {
+        return errors.New("Unable to determine the port.")   
+    }
+    
+    root := os.Getenv("ROOT")
+    if root == "" {
+        return errors.New("Unable to determine the root.")   
+    }
+    
+    db := os.Getenv("DATABASE")
+    if db == "" {
+        return errors.New("Unable to determine the database.")   
+    }
+    
+    conf = config.Config {
+        Database: config.Database{Url: db,},
+        Routing: config.Routing{Root: root, Port: port,},
+    }
 
 	return nil
 }
