@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
+	"recleague/Godeps/_workspace/src/github.com/gorilla/mux"
 
 	"recleague/logging"
 	"recleague/model"
@@ -104,12 +104,12 @@ func (c *Controller) GetLeague(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	leagueId, err := strconv.Atoi(vars["leagueId"])
 	if err != nil {
-	    c.log.Error("League ID not available: %v", err)   
+		c.log.Error("League ID not available: %v", err)
 	}
 
 	league, err := c.leagueRepo.FindById(leagueId)
 	if err != nil {
-	    c.log.Error("Unable to find league: %v", err)   
+		c.log.Error("Unable to find league: %v", err)
 	}
 
 	err = c.jsonResponse(w, league)

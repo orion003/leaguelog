@@ -12,7 +12,7 @@ import (
 	"recleague/logging"
 	"recleague/model"
 
-	_ "github.com/lib/pq"
+	_ "recleague/Godeps/_workspace/src/github.com/lib/pq"
 )
 
 var log logging.Logger = logging.NewLog15()

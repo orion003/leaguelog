@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/asaskevich/govalidator"
+	"recleague/Godeps/_workspace/src/github.com/asaskevich/govalidator"
 )
 
 func (league *League) Validate(repo LeagueRepository) error {
