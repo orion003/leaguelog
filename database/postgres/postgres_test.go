@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"recleague/logging"
-	"recleague/model"
+	"leaguelog.ca/logging"
+	"leaguelog.ca/model"
 
-	_ "recleague/Godeps/_workspace/src/github.com/lib/pq"
+	_ "leaguelog.ca/Godeps/_workspace/src/github.com/lib/pq"
 )
 
 var log logging.Logger = logging.NewLog15()

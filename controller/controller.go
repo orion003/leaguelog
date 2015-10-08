@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"recleague/Godeps/_workspace/src/github.com/gorilla/mux"
+	"leaguelog.ca/Godeps/_workspace/src/github.com/gorilla/mux"
 
-	"recleague/logging"
-	"recleague/model"
+	"leaguelog.ca/logging"
+	"leaguelog.ca/model"
 )
 
 type Controller struct {

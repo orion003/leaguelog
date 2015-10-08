@@ -1,7 +1,7 @@
 package logging
 
 import (
-	log15 "recleague/Godeps/_workspace/src/gopkg.in/inconshreveable/log15.v2"
+	log15 "leaguelog.ca/Godeps/_workspace/src/gopkg.in/inconshreveable/log15.v2"
 )
 
 type Logger interface {

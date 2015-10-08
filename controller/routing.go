@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"recleague/Godeps/_workspace/src/github.com/gorilla/mux"
+	"leaguelog.ca/Godeps/_workspace/src/github.com/gorilla/mux"
 
-	"recleague/logging"
+	"leaguelog.ca/logging"
 )
 
 type Route struct {

@@ -3,7 +3,7 @@ package mock
 import (
 	"time"
 
-	"recleague/model"
+	"leaguelog.ca/model"
 )
 
 func NewMockStandingRepository() *MockStandingRepository {

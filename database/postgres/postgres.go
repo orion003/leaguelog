@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 
-	_ "recleague/Godeps/_workspace/src/github.com/lib/pq"
+	_ "leaguelog.ca/Godeps/_workspace/src/github.com/lib/pq"
 )
 
 type PgManager struct {

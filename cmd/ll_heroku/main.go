@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"os"
 
-	"recleague/cmd/config"
-	"recleague/controller"
-	"recleague/database/postgres"
-	"recleague/logging"
+	"leaguelog.ca/cmd/config"
+	"leaguelog.ca/controller"
+	"leaguelog.ca/database/postgres"
+	"leaguelog.ca/logging"
 )
 
 var conf config.Config

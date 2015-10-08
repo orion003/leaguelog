@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"recleague/database/mock"
-	"recleague/logging"
-	"recleague/model"
+	"leaguelog.ca/database/mock"
+	"leaguelog.ca/logging"
+	"leaguelog.ca/model"
 )
 
 var server *httptest.Server

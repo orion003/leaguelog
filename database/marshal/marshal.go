@@ -1,7 +1,7 @@
 package marshal
 
 import (
-	"recleague/model"
+	"leaguelog.ca/model"
 )
 
 type MultiScanner interface {

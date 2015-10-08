@@ -3,8 +3,8 @@ package postgres
 import (
 	"time"
 
-	"recleague/database/marshal"
-	"recleague/model"
+	"leaguelog.ca/database/marshal"
+	"leaguelog.ca/model"
 )
 
 func NewPgGameRepository(manager *PgManager) *PgGameRepository {
