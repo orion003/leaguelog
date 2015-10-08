@@ -61,12 +61,12 @@ func initializeConfig() error {
         return errors.New("Unable to determine the port.")   
     }
     
-    root := os.Getenv("ROOT")
+    root := os.Getenv("ROOT_PATH")
     if root == "" {
         return errors.New("Unable to determine the root.")   
     }
     
-    db := os.Getenv("DATABASE")
+    db := os.Getenv("DATABASE_URL")
     if db == "" {
         return errors.New("Unable to determine the database.")   
     }
