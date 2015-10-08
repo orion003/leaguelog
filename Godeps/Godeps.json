@@ -1,5 +1,5 @@
 {
-	"ImportPath": "recleague",
+	"ImportPath": "leaguelog.ca",
 	"GoVersion": "go1.5",
 	"Packages": [
 		"./..."

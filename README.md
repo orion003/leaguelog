@@ -1,1 +1,1 @@
-# Rec League - Sports League Management
+# League Log - Sports League Management
