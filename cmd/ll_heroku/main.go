@@ -17,8 +17,8 @@ var conf config.Config
 func main() {
 	err := initializeConfig()
 	if err != nil {
-	    fmt.Printf("Unable to initialize config: %v\n", err)
-	    os.Exit(1)
+		fmt.Printf("Unable to initialize config: %v\n", err)
+		os.Exit(1)
 	}
 
 	log := logging.NewLog15()
@@ -36,7 +36,7 @@ func main() {
 func initializeRepos(c *controller.Controller) {
 	manager, err := postgres.NewPgManager(conf.Database.Url)
 	if err != nil {
-	    fmt.Printf("Unable to intialize repos: %v\n", err)
+		fmt.Printf("Unable to intialize repos: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -56,25 +56,25 @@ func initializeRepos(c *controller.Controller) {
 }
 
 func initializeConfig() error {
-    port := os.Getenv("PORT")
-    if port == "" {
-        return errors.New("Unable to determine the port.")   
-    }
-    
-    root := os.Getenv("ROOT_PATH")
-    if root == "" {
-        return errors.New("Unable to determine the root.")   
-    }
-    
-    db := os.Getenv("DATABASE_URL")
-    if db == "" {
-        return errors.New("Unable to determine the database.")   
-    }
-    
-    conf = config.Config {
-        Database: config.Database{Url: db,},
-        Routing: config.Routing{Root: root, Port: port,},
-    }
+	port := os.Getenv("PORT")
+	if port == "" {
+		return errors.New("Unable to determine the port.")
+	}
+
+	root := os.Getenv("ROOT_PATH")
+	if root == "" {
+		return errors.New("Unable to determine the root.")
+	}
+
+	db := os.Getenv("DATABASE_URL")
+	if db == "" {
+		return errors.New("Unable to determine the database.")
+	}
+
+	conf = config.Config{
+		Database: config.Database{Url: db},
+		Routing:  config.Routing{Root: root, Port: port},
+	}
 
 	return nil
 }

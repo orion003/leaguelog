@@ -101,13 +101,13 @@ func GameWithTeams(row MultiScanner) (*model.Game, error) {
 	var away model.Team
 
 	err := row.Scan(&game.Id, &season.Id, &game.StartTime, &game.HomeScore, &game.AwayScore, &game.Created, &game.Modified,
-	    &home.Id, &homeLeague.Id, &home.Name, &home.Created, &home.Modified,
-	    &away.Id, &awayLeague.Id, &away.Name, &away.Created, &away.Modified)
+		&home.Id, &homeLeague.Id, &home.Name, &home.Created, &home.Modified,
+		&away.Id, &awayLeague.Id, &away.Name, &away.Created, &away.Modified)
 
 	if err != nil {
 		return nil, err
 	}
-	
+
 	home.League = &homeLeague
 	away.League = &awayLeague
 
