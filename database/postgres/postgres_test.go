@@ -12,7 +12,7 @@ import (
 	"leaguelog/logging"
 	"leaguelog/model"
 
-	_ "github.com/lib/pq"
+	_ "leaguelog/Godeps/_workspace/src/github.com/lib/pq"
 )
 
 var log logging.Logger = logging.NewLog15()

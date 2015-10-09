@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/mux"
+	"leaguelog/Godeps/_workspace/src/github.com/gorilla/mux"
 
 	"leaguelog/logging"
 )

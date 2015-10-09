@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mattes/migrate/migrate"
+	"leaguelog/Godeps/_workspace/src/github.com/mattes/migrate/migrate"
 )
 
 func main() {
