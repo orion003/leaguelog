@@ -1,5 +1,5 @@
 {
-  "name": "Rec League",
+  "name": "LeagueLog",
   "version": "0.0.1",
   "homepage": "https://github.com/orion003/leaguelog",
   "authors": [
@@ -17,6 +17,7 @@
     "angular": "~1.4",
     "angular-ui-router": "~0.2",
     "angular-animate": "~1.4",
+    "angularytics": "~0.4",
     "foundation": "~5.5"
   }
 }
