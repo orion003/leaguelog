@@ -15,7 +15,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	path := os.Getenv("MIGRATINO_PATH")
+	path := os.Getenv("MIGRATION_PATH")
 	if db == "" {
 		fmt.Println("Unable to determine the migration path.")
 		os.Exit(1)
