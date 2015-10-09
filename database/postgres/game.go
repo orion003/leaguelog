@@ -62,7 +62,7 @@ func (repo *PgGameRepository) FindUpcomingBySeason(season *model.Season) ([]mode
         INNER JOIN team t1 on g.home_team_id = t1.id
         INNER JOIN team t2 on g.away_team_id = t2.id
         WHERE g.season_id = $1
-            AND g.start_time > current_timestamp
+            AND g.start_time > current_timestamp - interval '1 day'
         ORDER BY g.start_time ASC`, season.Id)
 
 	if err != nil {

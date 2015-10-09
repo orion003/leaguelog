@@ -6,7 +6,7 @@
             <th>Away</th>
         </tr>
         <tr data-ng-repeat="schedule in league.schedules">
-           <td>{{schedule.start_time | date:'medium'}}</td>
+           <td>{{schedule.start_time | date:'medium':'utc'}}</td>
            <td>{{schedule.home_team.name}}</td>
            <td>{{schedule.away_team.name}}</td>
         </tr>
