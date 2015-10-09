@@ -8,6 +8,8 @@ import (
 	"leaguelog/Godeps/_workspace/src/github.com/mattes/migrate/migrate"
 )
 
+var direction := flag.String("direction", "", "The db migration direction")
+
 func main() {
 	db := os.Getenv("DATABASE_URL")
 	if db == "" {
@@ -20,8 +22,7 @@ func main() {
 		fmt.Println("Unable to determine the migration path.")
 		os.Exit(1)
 	}
-
-	direction := flag.String("direction", "", "The db migration direction")
+	
 	if *direction == "up" {
 		fmt.Println("Migrating up!")
 		allErrors, ok := migrate.UpSync(db, path)
