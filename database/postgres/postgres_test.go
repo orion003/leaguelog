@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"leaguelog.ca/logging"
-	"leaguelog.ca/model"
+	"leaguelog/logging"
+	"leaguelog/model"
 
 	_ "github.com/lib/pq"
 )

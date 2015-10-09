@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"leaguelog.ca/model"
+	"leaguelog/model"
 )
 
 func NewMockUserRepository() *MockUserRepository {

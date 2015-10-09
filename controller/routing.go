@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"leaguelog.ca/logging"
+	"leaguelog/logging"
 )
 
 type Route struct {

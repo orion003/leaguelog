@@ -8,8 +8,8 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"leaguelog.ca/logging"
-	"leaguelog.ca/model"
+	"leaguelog/logging"
+	"leaguelog/model"
 )
 
 type Controller struct {
