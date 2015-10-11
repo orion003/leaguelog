@@ -252,17 +252,17 @@ func TestGetSchedule(t *testing.T) {
 		t.Errorf("Unable to obtain body: %v", err)
 	}
 
-	games := []model.Game{}
+	schedules := []Schedule{}
 	if len(body) > 0 {
-		err = json.Unmarshal(body, &games)
+		err = json.Unmarshal(body, &schedules)
 		if err != nil {
 			t.Errorf("Unable to unmarshal JSON: %v\n", err)
 		}
 	}
 
 	expectedCount := 2
-	if len(games) != expectedCount {
-		t.Errorf("Incorrect number of games. Found %d, should be %d", len(games), expectedCount)
+	if len(schedules) != expectedCount {
+		t.Errorf("Incorrect number of games. Found %d, should be %d", len(schedules), expectedCount)
 	}
 }
 

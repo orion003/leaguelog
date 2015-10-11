@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"leaguelog/Godeps/_workspace/src/github.com/gorilla/mux"
 
@@ -152,9 +153,31 @@ func (c *Controller) GetLeagueSchedule(w http.ResponseWriter, r *http.Request) {
 		c.log.Error(fmt.Sprintf("Error finding games for season %d: %v", season.Id, err))
 	}
 
-	err = c.jsonResponse(w, games)
+	schedule := make(map[time.Time][]model.Game)
+	numDates := 0
+	for _, game := range games {
+		_, ok := schedule[game.StartTime]
+		if ok == false {
+			schedule[game.StartTime] = make([]model.Game, 0, 1)
+			numDates = numDates + 1
+		}
+
+		schedule[game.StartTime] = append(schedule[game.StartTime], game)
+	}
+	
+	schedules := make([]Schedule, 0, numDates)
+	for d, g := range schedule {
+        s := Schedule {
+            StartDate: time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC),
+            Games: g,
+        }
+        
+        schedules = append(schedules, s)
+	}
+
+	err = c.jsonResponse(w, schedules)
 	if err != nil {
-		c.log.Error("Unable to get league games: %v", err)
+		c.log.Error(fmt.Sprintf("Unable to get league games: %v", err))
 	}
 }
 
