@@ -1,14 +1,10 @@
 <div class="schedule-list">
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>Home</th>
-            <th>Away</th>
-        </tr>
-        <tr data-ng-repeat="schedule in league.schedules">
-           <td>{{schedule.start_time | date:'medium':'utc'}}</td>
-           <td>{{schedule.home_team.name}}</td>
-           <td>{{schedule.away_team.name}}</td>
-        </tr>
-    </table>
+    <div data-ng-repeat="schedule in league.schedules">
+        <div>
+            {{schedule.start_date}}
+        </div>
+        <div data-ng-repeate="game in schedule.games">
+            {{game.away_team}} vs. {{game.home_team}}
+        </div>
+    </div>
 </div>
