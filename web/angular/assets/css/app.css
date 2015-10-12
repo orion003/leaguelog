@@ -69,11 +69,11 @@ header {
 }
 
 .button:hover, .button:focus {
-    background-color: #05375D; 
+    background-color: #05375D;
 }
 
 .button:hover, .button:focus {
-    color: #FFFFFF; 
+    color: #FFFFFF;
 }
 
 .email-success {
@@ -121,29 +121,56 @@ header {
     text-align: left;
 }
 
+/*
+    Schedule styles
+*/
+
 .main-schedule {
-    
+
+}
+
+.schedule-date-group {
+    margin-bottom: 1rem;
+}
+
+.schedule-date {
+    color: #6F6F6F;
+    font-size: 1.4rem;
+}
+
+.schedule-game-time {
+    color: #AA5D39;
+    font-weight: bold;
+}
+
+.schedule-game-team {
+
+}
+
+.schedule-game-vs {
+    color: #AFAFAF;
+    font-size: 0.8rem;
 }
 
 @media only screen and (max-width: 40em) {
     .home-search {
         border-bottom: #9E9E9E thin solid;
     }
-    
+
     .home-register {
         margin-top: 0.8rem;
     }
-    
+
     .league-list a {
         display: block;
     }
-    
+
     .main-standings table {
         width: 100%;
     }
 }
 
-@media only screen and (min-width: 40.063em) { 
+@media only screen and (min-width: 40.063em) {
     .home-search {
         border-right: #9E9E9E thin solid;
     }
@@ -153,7 +180,7 @@ header {
     .button {
         padding: inherit;
     }
-    
+
     .large-postfix {
         border-style: solid;
         border-width: 1px;
@@ -167,11 +194,11 @@ header {
         position: relative;
         text-align: center;
         width: 100%;
-        z-index: 2; 
-    
+        z-index: 2;
+
     }
 
     .large-postfix.button {
-        border-color: true; 
+        border-color: true;
     }
 }
