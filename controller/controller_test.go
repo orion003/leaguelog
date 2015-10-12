@@ -236,7 +236,7 @@ func TestGetSchedule(t *testing.T) {
 	}
 	err = controller.gameRepo.Create(g1)
 
-	startDate2 := time.Date(nextYear, time.October, 8, 19, 15, 0, 0, time.UTC)
+	startDate2 := time.Date(nextYear, time.October, 6, 19, 15, 0, 0, time.UTC)
 	g2 := &model.Game{
 		Season:    season,
 		StartTime: startDate2,
@@ -260,7 +260,7 @@ func TestGetSchedule(t *testing.T) {
 		}
 	}
 
-	expectedCount := 2
+	expectedCount := 1
 	if len(schedules) != expectedCount {
 		t.Errorf("Incorrect number of games. Found %d, should be %d", len(schedules), expectedCount)
 	}

@@ -156,22 +156,23 @@ func (c *Controller) GetLeagueSchedule(w http.ResponseWriter, r *http.Request) {
 	schedule := make(map[time.Time][]model.Game)
 	numDates := 0
 	for _, game := range games {
-		_, ok := schedule[game.StartTime]
+	    startDate := time.Date(game.StartTime.Year(), game.StartTime.Month(), game.StartTime.Day(), 0, 0, 0, 0, time.UTC)
+		_, ok := schedule[startDate]
 		if ok == false {
-			schedule[game.StartTime] = make([]model.Game, 0, 1)
+			schedule[startDate] = make([]model.Game, 0, 1)
 			numDates = numDates + 1
 		}
 
-		schedule[game.StartTime] = append(schedule[game.StartTime], game)
+		schedule[startDate] = append(schedule[startDate], game)
 	}
-	
+
 	schedules := make([]Schedule, 0, numDates)
 	for d, g := range schedule {
         s := Schedule {
-            StartDate: time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC),
+            StartDate: d,
             Games: g,
         }
-        
+
         schedules = append(schedules, s)
 	}
 
