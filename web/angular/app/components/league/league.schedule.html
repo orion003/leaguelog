@@ -7,18 +7,20 @@
                 </div>
             </div>
             <div data-ng-repeat="game in schedule.games | orderBy:'game.start_time'">
-                <div class="row">
-                    <div class="small-2 columns schedule-game-time">
-                        {{game.start_time | date:'shortTime':'UTC'}}
-                    </div>
-                    <div class="small-4 columns text-right schedule-game-team">
-                        {{game.away_team.name}}
-                    </div>
-                    <div class="small-2 text-center columns schedule-game-vs">
-                        -vs-
-                    </div>
-                    <div class="small-4 columns schedule-game-team">
-                        {{game.home_team.name}}
+                <div class="schedule-game">
+                    <div class="row">
+                        <div class="small-12 medium-2 columns schedule-game-time">
+                            {{game.start_time | date:'shortTime':'UTC'}}
+                        </div>
+                        <div class="small-5 medium-4 columns text-right schedule-game-team">
+                            {{game.away_team.name}}
+                        </div>
+                        <div class="small-2 text-center columns schedule-game-vs">
+                            -vs-
+                        </div>
+                        <div class="small-5 medium-4 columns schedule-game-team">
+                            {{game.home_team.name}}
+                        </div>
                     </div>
                 </div>
             </div>
