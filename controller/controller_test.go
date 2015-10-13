@@ -264,6 +264,10 @@ func TestGetSchedule(t *testing.T) {
 	if len(schedules) != expectedCount {
 		t.Errorf("Incorrect number of games. Found %d, should be %d", len(schedules), expectedCount)
 	}
+
+	if schedules[0].StartDate != time.Date(nextYear, time.October, 6, 0, 0, 0, 0, time.UTC) {
+        t.Errorf("Incorrect date for schedule: %v", schedules[0].StartDate)
+	}
 }
 
 func request(rUrl string) ([]byte, error) {
