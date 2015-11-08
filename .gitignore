@@ -8,6 +8,9 @@ _obj
 _test
 
 **/assets/libs
+**/node_modules
+**/tmp
+**/dist
 
 # Architecture specific extensions/prefixes
 *.[568vq]

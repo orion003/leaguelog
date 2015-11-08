@@ -4,39 +4,29 @@ import (
 	"time"
 )
 
-type LeagueRepository interface {
-	Create(league *League) error
-	FindById(id int) (*League, error)
-	FindAll() ([]League, error)
-}
+type Repository interface {
+	CreateLeague(league *League) error
+	FindLeagueById(id int) (*League, error)
+	FindAllLeagues() ([]League, error)
 
-type SeasonRepository interface {
-	Create(season *Season) error
-	FindById(id int) (*Season, error)
-	FindMostRecentByLeague(league *League) (*Season, error)
-}
+	CreateSeason(season *Season) error
+	FindSeasonById(id int) (*Season, error)
+	FindMostRecentSeasonByLeague(league *League) (*Season, error)
 
-type TeamRepository interface {
-	Create(team *Team) error
-	FindById(id int) (*Team, error)
-}
+	CreateTeam(team *Team) error
+	FindTeamById(id int) (*Team, error)
 
-type StandingRepository interface {
-	Create(standing *Standing) error
-	FindAllBySeason(season *Season) ([]Standing, error)
-}
+	CreateStanding(standing *Standing) error
+	FindAllStandingsBySeason(season *Season) ([]Standing, error)
 
-type GameRepository interface {
-	Create(game *Game) error
-	FindById(id int) (*Game, error)
-	FindUpcomingBySeason(season *Season) ([]Game, error)
-}
+	CreateGame(game *Game) error
+	FindGameById(id int) (*Game, error)
+	FindAllGamesAfterDateBySeason(season *Season, t *time.Time) ([]Game, error)
 
-type UserRepository interface {
-	Create(user *User) error
-	FindById(id int) (*User, error)
-	FindByEmail(email string) (*User, error)
-	FindAll() ([]User, error)
+	CreateUser(user *User) error
+	FindUserById(id int) (*User, error)
+	FindUserByEmail(email string) (*User, error)
+	FindAllUsers() ([]User, error)
 }
 
 type Model struct {

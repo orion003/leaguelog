@@ -37,19 +37,9 @@ func initializeRepos(c *controller.Controller) {
 		os.Exit(1)
 	}
 
-	leagueRepo := postgres.NewPgLeagueRepository(manager)
-	seasonRepo := postgres.NewPgSeasonRepository(manager)
-	teamRepo := postgres.NewPgTeamRepository(manager)
-	gameRepo := postgres.NewPgGameRepository(manager)
-	standingRepo := postgres.NewPgStandingRepository(manager)
-	userRepo := postgres.NewPgUserRepository(manager)
+	repo := postgres.NewPgRepository(manager)
 
-	c.SetLeagueRepository(leagueRepo)
-	c.SetSeasonRepository(seasonRepo)
-	c.SetTeamRepository(teamRepo)
-	c.SetGameRepository(gameRepo)
-	c.SetStandingRepository(standingRepo)
-	c.SetUserRepository(userRepo)
+	c.SetRepository(repo)
 }
 
 func initializeConfig() error {

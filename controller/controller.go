@@ -14,12 +14,7 @@ import (
 )
 
 type Controller struct {
-	leagueRepo   model.LeagueRepository
-	seasonRepo   model.SeasonRepository
-	teamRepo     model.TeamRepository
-	standingRepo model.StandingRepository
-	gameRepo     model.GameRepository
-	userRepo     model.UserRepository
+	repo model.Repository
 
 	log logging.Logger
 }
@@ -32,28 +27,8 @@ func NewController(l logging.Logger) *Controller {
 	return c
 }
 
-func (c *Controller) SetLeagueRepository(repo model.LeagueRepository) {
-	c.leagueRepo = repo
-}
-
-func (c *Controller) SetSeasonRepository(repo model.SeasonRepository) {
-	c.seasonRepo = repo
-}
-
-func (c *Controller) SetTeamRepository(repo model.TeamRepository) {
-	c.teamRepo = repo
-}
-
-func (c *Controller) SetStandingRepository(repo model.StandingRepository) {
-	c.standingRepo = repo
-}
-
-func (c *Controller) SetGameRepository(repo model.GameRepository) {
-	c.gameRepo = repo
-}
-
-func (c *Controller) SetUserRepository(repo model.UserRepository) {
-	c.userRepo = repo
+func (c *Controller) SetRepository(repo model.Repository) {
+	c.repo = repo
 }
 
 func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -67,11 +42,12 @@ func (c *Controller) AddEmail(w http.ResponseWriter, r *http.Request) {
 
 	var user model.User
 	err := decoder.Decode(&user)
+
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Unable to decode user email JSON: %v", err))
 		w.WriteHeader(http.StatusNotAcceptable)
 	} else {
-		err = c.userRepo.Create(&user)
+		err = c.repo.CreateUser(&user)
 		if err != nil {
 			c.log.Error(fmt.Sprintf("AddEmail error: %v", err))
 			w.WriteHeader(http.StatusNotAcceptable)
@@ -86,7 +62,7 @@ func (c *Controller) AddEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) GetLeagues(w http.ResponseWriter, r *http.Request) {
-	leagues, err := c.leagueRepo.FindAll()
+	leagues, err := c.repo.FindAllLeagues()
 	if err != nil {
 		c.log.Error(err.Error())
 	}
@@ -108,7 +84,7 @@ func (c *Controller) GetLeague(w http.ResponseWriter, r *http.Request) {
 		c.log.Error("League ID not available: %v", err)
 	}
 
-	league, err := c.leagueRepo.FindById(leagueId)
+	league, err := c.repo.FindLeagueById(leagueId)
 	if err != nil {
 		c.log.Error("Unable to find league: %v", err)
 	}
@@ -124,11 +100,11 @@ func (c *Controller) GetLeagueStandings(w http.ResponseWriter, r *http.Request) 
 	leagueId, err := strconv.Atoi(vars["leagueId"])
 
 	league := &model.League{Model: model.Model{Id: leagueId}}
-	season, err := c.seasonRepo.FindMostRecentByLeague(league)
+	season, err := c.repo.FindMostRecentSeasonByLeague(league)
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Error finding season for league %d: %v", league.Id, err))
 	}
-	standings, err := c.standingRepo.FindAllBySeason(season)
+	standings, err := c.repo.FindAllStandingsBySeason(season)
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Error finding standings for season %d: %v", season.Id, err))
 	}
@@ -144,11 +120,14 @@ func (c *Controller) GetLeagueSchedule(w http.ResponseWriter, r *http.Request) {
 	leagueId, err := strconv.Atoi(vars["leagueId"])
 
 	league := &model.League{Model: model.Model{Id: leagueId}}
-	season, err := c.seasonRepo.FindMostRecentByLeague(league)
+	season, err := c.repo.FindMostRecentSeasonByLeague(league)
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Error finding season for league %d: %v", league.Id, err))
 	}
-	games, err := c.gameRepo.FindUpcomingBySeason(season)
+
+	year, month, day := time.Now().Date()
+	gameTime := time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
+	games, err := c.repo.FindAllGamesAfterDateBySeason(season, &gameTime)
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Error finding games for season %d: %v", season.Id, err))
 	}
@@ -156,7 +135,7 @@ func (c *Controller) GetLeagueSchedule(w http.ResponseWriter, r *http.Request) {
 	schedule := make(map[time.Time][]model.Game)
 	numDates := 0
 	for _, game := range games {
-	    startDate := time.Date(game.StartTime.Year(), game.StartTime.Month(), game.StartTime.Day(), 0, 0, 0, 0, time.UTC)
+		startDate := time.Date(game.StartTime.Year(), game.StartTime.Month(), game.StartTime.Day(), 0, 0, 0, 0, time.UTC)
 		_, ok := schedule[startDate]
 		if ok == false {
 			schedule[startDate] = make([]model.Game, 0, 1)
@@ -168,12 +147,12 @@ func (c *Controller) GetLeagueSchedule(w http.ResponseWriter, r *http.Request) {
 
 	schedules := make([]Schedule, 0, numDates)
 	for d, g := range schedule {
-        s := Schedule {
-            StartDate: d,
-            Games: g,
-        }
+		s := Schedule{
+			StartDate: d,
+			Games:     g,
+		}
 
-        schedules = append(schedules, s)
+		schedules = append(schedules, s)
 	}
 
 	err = c.jsonResponse(w, schedules)

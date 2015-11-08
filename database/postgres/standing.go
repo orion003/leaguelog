@@ -7,15 +7,7 @@ import (
 	"leaguelog/model"
 )
 
-func NewPgStandingRepository(manager *PgManager) *PgStandingRepository {
-	repo := &PgStandingRepository{
-		manager: manager,
-	}
-
-	return repo
-}
-
-func (repo *PgStandingRepository) Create(standing *model.Standing) error {
+func (repo *PgRepository) CreateStanding(standing *model.Standing) error {
 	err := standing.Validate(repo)
 	if err != nil {
 		return err
@@ -24,7 +16,7 @@ func (repo *PgStandingRepository) Create(standing *model.Standing) error {
 	t := time.Now()
 
 	var id int
-	err = repo.manager.db.QueryRow(`INSERT INTO standing(season_id, team_id, wins, losses, ties, created, modified) 
+	err = repo.manager.db.QueryRow(`INSERT INTO standing(season_id, team_id, wins, losses, ties, created, modified)
 	    VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 		standing.Season.Id, standing.Team.Id, standing.Wins, standing.Losses, standing.Ties, t, t).Scan(&id)
 
@@ -39,7 +31,7 @@ func (repo *PgStandingRepository) Create(standing *model.Standing) error {
 	return nil
 }
 
-func (repo *PgStandingRepository) FindAllBySeason(season *model.Season) ([]model.Standing, error) {
+func (repo *PgRepository) FindAllStandingsBySeason(season *model.Season) ([]model.Standing, error) {
 	rows, err := repo.manager.db.Query(`SELECT s.id, s.season_id, s.wins, s.losses, s.ties, s.created, s.modified,
 	        t.id, t.league_id, t.name, t.created, t.modified
         FROM standing s

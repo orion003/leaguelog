@@ -7,15 +7,7 @@ import (
 	"leaguelog/model"
 )
 
-func NewPgLeagueRepository(manager *PgManager) *PgLeagueRepository {
-	repo := &PgLeagueRepository{
-		manager: manager,
-	}
-
-	return repo
-}
-
-func (repo *PgLeagueRepository) Create(league *model.League) error {
+func (repo *PgRepository) CreateLeague(league *model.League) error {
 	err := league.Validate(repo)
 	if err != nil {
 		return err
@@ -24,7 +16,7 @@ func (repo *PgLeagueRepository) Create(league *model.League) error {
 	t := time.Now()
 
 	var id int
-	err = repo.manager.db.QueryRow(`INSERT INTO league(name, sport, created, modified) 
+	err = repo.manager.db.QueryRow(`INSERT INTO league(name, sport, created, modified)
 	    VALUES($1, $2, $3, $4) RETURNING id`,
 		league.Name, league.Sport, t, t).Scan(&id)
 
@@ -39,7 +31,7 @@ func (repo *PgLeagueRepository) Create(league *model.League) error {
 	return nil
 }
 
-func (repo *PgLeagueRepository) FindAll() ([]model.League, error) {
+func (repo *PgRepository) FindAllLeagues() ([]model.League, error) {
 	rows, err := repo.manager.db.Query(`SELECT id, name, sport, created, modified
         FROM league`)
 
@@ -69,7 +61,7 @@ func (repo *PgLeagueRepository) FindAll() ([]model.League, error) {
 	return leagues, nil
 }
 
-func (repo *PgLeagueRepository) FindById(id int) (*model.League, error) {
+func (repo *PgRepository) FindLeagueById(id int) (*model.League, error) {
 	row := repo.manager.db.QueryRow(`SELECT id, name, sport, created, modified
         FROM league
         WHERE id = $1`, id)

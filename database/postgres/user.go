@@ -7,15 +7,7 @@ import (
 	"leaguelog/model"
 )
 
-func NewPgUserRepository(manager *PgManager) *PgUserRepository {
-	repo := &PgUserRepository{
-		manager: manager,
-	}
-
-	return repo
-}
-
-func (repo *PgUserRepository) Create(user *model.User) error {
+func (repo *PgRepository) CreateUser(user *model.User) error {
 	err := user.Validate(repo)
 	if err != nil {
 		return err
@@ -24,7 +16,7 @@ func (repo *PgUserRepository) Create(user *model.User) error {
 	t := time.Now()
 
 	var id int
-	err = repo.manager.db.QueryRow(`INSERT INTO user0(email, created, modified) 
+	err = repo.manager.db.QueryRow(`INSERT INTO user0(email, created, modified)
 	    VALUES($1, $2, $3) RETURNING id`,
 		user.Email, t, t).Scan(&id)
 
@@ -39,7 +31,7 @@ func (repo *PgUserRepository) Create(user *model.User) error {
 	return nil
 }
 
-func (repo *PgUserRepository) FindAll() ([]model.User, error) {
+func (repo *PgRepository) FindAllUsers() ([]model.User, error) {
 	rows, err := repo.manager.db.Query(`SELECT id, email, created, modified
         FROM user0`)
 
@@ -69,7 +61,7 @@ func (repo *PgUserRepository) FindAll() ([]model.User, error) {
 	return users, nil
 }
 
-func (repo *PgUserRepository) FindById(id int) (*model.User, error) {
+func (repo *PgRepository) FindUserById(id int) (*model.User, error) {
 	row := repo.manager.db.QueryRow(`SELECT id, email, created, modified
         FROM user0
         WHERE id = $1`, id)
@@ -79,7 +71,7 @@ func (repo *PgUserRepository) FindById(id int) (*model.User, error) {
 	return user, err
 }
 
-func (repo *PgUserRepository) FindByEmail(email string) (*model.User, error) {
+func (repo *PgRepository) FindUserByEmail(email string) (*model.User, error) {
 	row := repo.manager.db.QueryRow(`SELECT id, email, created, modified
         FROM user0
         WHERE email = $1`, email)

@@ -7,15 +7,7 @@ import (
 	"leaguelog/model"
 )
 
-func NewPgTeamRepository(manager *PgManager) *PgTeamRepository {
-	repo := &PgTeamRepository{
-		manager: manager,
-	}
-
-	return repo
-}
-
-func (repo *PgTeamRepository) Create(team *model.Team) error {
+func (repo *PgRepository) CreateTeam(team *model.Team) error {
 	err := team.Validate(repo)
 	if err != nil {
 		return err
@@ -24,7 +16,7 @@ func (repo *PgTeamRepository) Create(team *model.Team) error {
 	t := time.Now()
 
 	var id int
-	err = repo.manager.db.QueryRow(`INSERT INTO team(league_id, name, created, modified) 
+	err = repo.manager.db.QueryRow(`INSERT INTO team(league_id, name, created, modified)
 	    VALUES($1, $2, $3, $4) RETURNING id`,
 		team.League.Id, team.Name, t, t).Scan(&id)
 
@@ -39,9 +31,9 @@ func (repo *PgTeamRepository) Create(team *model.Team) error {
 	return nil
 }
 
-func (repo *PgTeamRepository) FindById(id int) (*model.Team, error) {
+func (repo *PgRepository) FindTeamById(id int) (*model.Team, error) {
 	row := repo.manager.db.QueryRow(`
-	    SELECT 
+	    SELECT
 	        t.id, t.league_id, t.name, t.created, t.modified
         FROM team t
         WHERE t.id = $1`, id)

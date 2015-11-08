@@ -7,7 +7,7 @@ import (
 	"leaguelog/Godeps/_workspace/src/github.com/asaskevich/govalidator"
 )
 
-func (league *League) Validate(repo LeagueRepository) error {
+func (league *League) Validate(repo Repository) error {
 	if league.Name == "" {
 		return errors.New("Cannot create League without name.")
 	}
@@ -19,7 +19,7 @@ func (league *League) Validate(repo LeagueRepository) error {
 	return nil
 }
 
-func (season *Season) Validate(repo SeasonRepository) error {
+func (season *Season) Validate(repo Repository) error {
 	if season.League == nil {
 		return errors.New("Cannot create Season without League.")
 	}
@@ -44,7 +44,7 @@ func (season *Season) Validate(repo SeasonRepository) error {
 	return nil
 }
 
-func (team *Team) Validate(repo TeamRepository) error {
+func (team *Team) Validate(repo Repository) error {
 	if team.League == nil {
 		return errors.New("Cannot create Team without League.")
 	}
@@ -56,7 +56,7 @@ func (team *Team) Validate(repo TeamRepository) error {
 	return nil
 }
 
-func (game *Game) Validate(repo GameRepository) error {
+func (game *Game) Validate(repo Repository) error {
 	if game.Season == nil {
 		return errors.New("Cannot create Game without Season.")
 	}
@@ -77,7 +77,7 @@ func (game *Game) Validate(repo GameRepository) error {
 	return nil
 }
 
-func (standing *Standing) Validate(repo StandingRepository) error {
+func (standing *Standing) Validate(repo Repository) error {
 	if standing.Season == nil {
 		return errors.New("Cannot create Standing without Season.")
 	}
@@ -89,7 +89,7 @@ func (standing *Standing) Validate(repo StandingRepository) error {
 	return nil
 }
 
-func (user *User) Validate(repo UserRepository) error {
+func (user *User) Validate(repo Repository) error {
 	if user.Email == "" {
 		return errors.New("Cannot create User without email.")
 	}
@@ -98,7 +98,7 @@ func (user *User) Validate(repo UserRepository) error {
 		return UserInvalidEmail
 	}
 
-	u, _ := repo.FindByEmail(user.Email)
+	u, _ := repo.FindUserByEmail(user.Email)
 	if u != nil {
 		return UserDuplicateEmail
 	}

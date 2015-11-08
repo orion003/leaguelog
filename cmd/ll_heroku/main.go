@@ -24,7 +24,7 @@ func main() {
 	log := logging.NewLog15()
 	c := controller.NewController(log)
 
-	initializeRepos(c)
+	initializeRepo(c)
 
 	fmt.Printf("Initializing root route: %s \n", conf.Routing.Root)
 	r := controller.NewRouter(c, conf.Routing.Root)
@@ -33,26 +33,16 @@ func main() {
 	http.ListenAndServe(fmt.Sprintf(":%s", conf.Routing.Port), r)
 }
 
-func initializeRepos(c *controller.Controller) {
+func initializeRepo(c *controller.Controller) {
 	manager, err := postgres.NewPgManager(conf.Database.Url)
 	if err != nil {
-		fmt.Printf("Unable to intialize repos: %v\n", err)
+		fmt.Printf("Unable to intialize repo: %v\n", err)
 		os.Exit(1)
 	}
 
-	leagueRepo := postgres.NewPgLeagueRepository(manager)
-	seasonRepo := postgres.NewPgSeasonRepository(manager)
-	teamRepo := postgres.NewPgTeamRepository(manager)
-	gameRepo := postgres.NewPgGameRepository(manager)
-	standingRepo := postgres.NewPgStandingRepository(manager)
-	userRepo := postgres.NewPgUserRepository(manager)
+	repo := postgres.NewPgRepository(manager)
 
-	c.SetLeagueRepository(leagueRepo)
-	c.SetSeasonRepository(seasonRepo)
-	c.SetTeamRepository(teamRepo)
-	c.SetGameRepository(gameRepo)
-	c.SetStandingRepository(standingRepo)
-	c.SetUserRepository(userRepo)
+	c.SetRepository(repo)
 }
 
 func initializeConfig() error {

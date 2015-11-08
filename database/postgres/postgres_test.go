@@ -4,32 +4,28 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
-	"time"
 
 	"leaguelog/logging"
-	"leaguelog/model"
 
 	_ "leaguelog/Godeps/_workspace/src/github.com/lib/pq"
 )
 
 var log logging.Logger = logging.NewLog15()
 
-var leagueRepo *PgLeagueRepository
-var seasonRepo *PgSeasonRepository
-var teamRepo *PgTeamRepository
-var standingRepo *PgStandingRepository
-var gameRepo *PgGameRepository
-var userRepo *PgUserRepository
+var repo *PgRepository
 
 type config struct {
-	Database database `json:database`
+	Database database `json:"database"`
 }
 
 type database struct {
-	Url string `json:url`
+	Url  string `json:"url"`
+	Seed string `json:"seed"`
+	Test string `json:"test"`
 }
 
 var c config
@@ -37,11 +33,11 @@ var c config
 func TestMain(m *testing.M) {
 	err := initialize()
 	if err != nil {
-		log.Error("Unable to initialize database")
+		log.Error(fmt.Sprintf("Unable to initialize database: %v", err))
 		os.Exit(1)
 	}
 
-	url := c.Database.Url
+	url := c.Database.Url + c.Database.Test
 
 	manager, err := NewPgManager(url)
 	if err != nil {
@@ -49,43 +45,49 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	leagueRepo = NewPgLeagueRepository(manager)
-	seasonRepo = NewPgSeasonRepository(manager)
-	teamRepo = NewPgTeamRepository(manager)
-	standingRepo = NewPgStandingRepository(manager)
-	gameRepo = NewPgGameRepository(manager)
-	userRepo = NewPgUserRepository(manager)
+	repo = NewPgRepository(manager)
 
 	r := m.Run()
 
-	manager.close()
+	err = manager.close()
+	if err != nil {
+		log.Error(fmt.Sprintf("Error closing database: %v", err))
+		os.Exit(1)
+	}
 
 	os.Exit(r)
 }
 
 func TestLeague(t *testing.T) {
+	testFindLeagueById(t)
 	testCreateLeague(t)
 }
 
 func TestSeason(t *testing.T) {
+	testFindMostRecentSeasonByLeague(t)
 	testCreateSeason(t)
 }
 
 func TestTeam(t *testing.T) {
+	testFindTeamById(t)
 	testCreateTeam(t)
 }
 
 func TestStanding(t *testing.T) {
-	testGetStandingBySeason(t)
+	testFindStandingsBySeason(t)
 }
 
 func TestGame(t *testing.T) {
+	testFindAllGamesAfterDateBySeason(t)
 	testCreateGame(t)
 }
 
 func TestUser(t *testing.T) {
-	testCreateUser(t)
+	testFindUserById(t)
 	testFindUserByEmail(t)
+	testCreateUser(t)
+	testInvalidUserEmail(t)
+	testDuplicateUserEmail(t)
 }
 
 //helper functions
@@ -98,16 +100,7 @@ func initialize() error {
 
 	json.Unmarshal(file, &c)
 
-	return nil
-}
-
-func truncateTables() error {
-	db, err := sql.Open("postgres", c.Database.Url)
-	if err != nil {
-		return err
-	}
-
-	_, err = db.Exec("TRUNCATE league, season, team, game, user0, standing RESTART IDENTITY")
+	err = initializeTables()
 	if err != nil {
 		return err
 	}
@@ -115,95 +108,25 @@ func truncateTables() error {
 	return nil
 }
 
-func createLeague(repo *PgLeagueRepository) (*model.League, error) {
-	league := &model.League{
-		Name:  "Test League",
-		Sport: "Hockey",
-	}
-
-	err := repo.Create(league)
+func initializeTables() error {
+	db, err := sql.Open("postgres", c.Database.Url+c.Database.Seed)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return league, nil
-}
+	defer db.Close()
 
-func createSeason(repo *PgSeasonRepository, league *model.League) (*model.Season, error) {
-	startDate := time.Date(2015, time.October, 6, 0, 0, 0, 0, time.UTC)
-	endDate := time.Date(2016, time.April, 24, 0, 0, 0, 0, time.UTC)
-	season := &model.Season{
-		League:    league,
-		Name:      "Test Season",
-		StartDate: startDate,
-		EndDate:   endDate,
-	}
-
-	err := repo.Create(season)
+	log.Info(fmt.Sprintf("Dropping database: %s", c.Database.Test))
+	_, err = db.Exec(fmt.Sprintf("DROP DATABASE IF EXISTS %s", c.Database.Test))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return season, nil
-}
-
-func createTeam(repo *PgTeamRepository, league *model.League) (*model.Team, error) {
-	team := &model.Team{
-		League: league,
-		Name:   "Test Team",
-	}
-
-	err := repo.Create(team)
+	log.Info(fmt.Sprintf("Creating database %s from template %s", c.Database.Test, c.Database.Seed))
+	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s TEMPLATE %s", c.Database.Test, c.Database.Seed))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return team, nil
-}
-
-func createStanding(repo *PgStandingRepository, season *model.Season, team *model.Team) (*model.Standing, error) {
-	standing := &model.Standing{
-		Season: season,
-		Team:   team,
-		Wins:   3,
-		Losses: 3,
-		Ties:   3,
-	}
-
-	err := repo.Create(standing)
-	if err != nil {
-		return nil, err
-	}
-
-	return standing, nil
-}
-
-func createGame(repo *PgGameRepository, season *model.Season, hometeam *model.Team, awayteam *model.Team) (*model.Game, error) {
-	t := time.Date(2015, time.October, 6, 8, 30, 0, 0, time.UTC)
-	game := &model.Game{
-		Season:    season,
-		StartTime: t,
-		HomeTeam:  hometeam,
-		AwayTeam:  awayteam,
-	}
-
-	err := repo.Create(game)
-	if err != nil {
-		return nil, err
-	}
-
-	return game, nil
-}
-
-func createUser(repo *PgUserRepository) (*model.User, error) {
-	user := &model.User{
-		Email: "test@email.com",
-	}
-
-	err := repo.Create(user)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	return nil
 }

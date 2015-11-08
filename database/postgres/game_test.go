@@ -2,57 +2,69 @@ package postgres
 
 import (
 	"testing"
+	"time"
+
+	"leaguelog/model"
 )
 
+func testFindAllGamesAfterDateBySeason(t *testing.T) {
+	seasonId := 1
+	season, err := repo.FindSeasonById(seasonId)
+	if err != nil {
+		t.Errorf("Error finding season: %v", err)
+	}
+
+	after := time.Date(2015, time.October, 2, 12, 0, 0, 0, time.UTC)
+
+	games, err := repo.FindAllGamesAfterDateBySeason(season, &after)
+	if err != nil {
+		t.Errorf("Error finding games: %v", err)
+	}
+
+	if len(games) != 1 {
+		t.Errorf("Wrong number of games found: %d", len(games))
+	}
+}
+
 func testCreateGame(t *testing.T) {
-	truncateTables()
-
-	league, err := createLeague(leagueRepo)
+	seasonId := 1
+	season, err := repo.FindSeasonById(seasonId)
 	if err != nil {
-		t.Error("Error creating league.", err)
+		t.Errorf("Unable to find season for game: %v", err)
 	}
 
-	season, err := createSeason(seasonRepo, league)
+	homeTeamId := 1
+	homeTeam, err := repo.FindTeamById(homeTeamId)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("Unable to find home team for game: %v", err)
 	}
 
-	hometeam, err := createTeam(teamRepo, league)
+	awayTeamId := 2
+	awayTeam, err := repo.FindTeamById(awayTeamId)
 	if err != nil {
-		t.Log("Error creating home team.")
-		t.Error(err)
+		t.Errorf("Unable to find away team for game: %v", err)
 	}
-	hometeam.Name = "Home Team"
 
-	awayteam, err := createTeam(teamRepo, league)
+	startTime := time.Date(2015, time.October, 5, 21, 30, 0, 0, time.UTC)
+	game := &model.Game{
+		Season:    season,
+		HomeTeam:  homeTeam,
+		AwayTeam:  awayTeam,
+		StartTime: startTime,
+	}
+
+	err = repo.CreateGame(game)
 	if err != nil {
-		t.Log("Error creating away team.")
-		t.Error(err)
+		t.Error("Error creating game.", err)
 	}
-	awayteam.Name = "Away Team"
 
-	game, err := createGame(gameRepo, season, hometeam, awayteam)
+	after := time.Date(2015, time.October, 2, 12, 0, 0, 0, time.UTC)
+	games, err := repo.FindAllGamesAfterDateBySeason(season, &after)
 	if err != nil {
-		t.Log("Error creating game.")
-		t.Error(err)
+		t.Errorf("Error finding games: %v", err)
 	}
 
-	persistedGame, err := gameRepo.FindById(game.Id)
-	if err != nil {
-		t.Logf("Error finding game by id: %d", game.Id)
-		t.Error(err)
-	}
-	if persistedGame.Season == nil {
-		t.Error("Season should never be nil")
-	}
-	if persistedGame.HomeTeam == nil {
-		t.Error("Home team should never be nil")
-	}
-	if persistedGame.AwayTeam == nil {
-		t.Error("Away team should never be nil")
-	}
-
-	if game.Id != persistedGame.Id {
-		t.Error("Games do not match.")
+	if len(games) != 2 {
+		t.Errorf("Wrong number of games found: %d", len(games))
 	}
 }

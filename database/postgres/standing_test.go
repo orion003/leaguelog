@@ -4,41 +4,34 @@ import (
 	"testing"
 )
 
-func testGetStandingBySeason(t *testing.T) {
-	truncateTables()
+func testFindStandingsBySeason(t *testing.T) {
+	seasonId := 1
 
-	league, err := createLeague(leagueRepo)
+	season, err := repo.FindSeasonById(seasonId)
 	if err != nil {
-		t.Error("Error creating league.", err)
+		t.Errorf("Error finding season: %v", err)
 	}
 
-	season, err := createSeason(seasonRepo, league)
+	standings, err := repo.FindAllStandingsBySeason(season)
 	if err != nil {
-		t.Error("Error creating season.", err)
+		t.Errorf("Error finding standings: %v", err)
 	}
 
-	team, err := createTeam(teamRepo, league)
-	if err != nil {
-		t.Error("Error creating team.", err)
+	if len(standings) != 2 {
+		t.Errorf("Wrong number of standings by season: %d", len(standings))
 	}
 
-	_, err = createStanding(standingRepo, season, team)
-	if err != nil {
-		t.Error("Error creating standing.", err)
-	}
-
-	_, err = createStanding(standingRepo, season, team)
-	if err != nil {
-		t.Error("Error creating standing.", err)
-	}
-
-	persistedStandings, err := standingRepo.FindAllBySeason(season)
-	if err != nil {
-		t.Errorf("Error finding standing by season: %d", season.Id)
-		t.Error(err)
-	}
-
-	if len(persistedStandings) != 2 {
-		t.Errorf("Incorrect number of standings found: %d", len(persistedStandings))
+	for _, standing := range standings {
+		if standing.Id == 1 {
+			if standing.Wins != 2 && standing.Losses != 0 && standing.Ties != 0 {
+				t.Errorf("Standing %d has incorrect number of w-l-t: %d-%d-%d", standing.Id, standing.Wins, standing.Losses, standing.Ties)
+			}
+		} else if standing.Id == 2 {
+			if standing.Wins != 0 && standing.Losses != 2 && standing.Ties != 0 {
+				t.Errorf("Standing %d has incorrect number of w-l-t: %d-%d-%d", standing.Id, standing.Wins, standing.Losses, standing.Ties)
+			}
+		} else {
+			t.Errorf("Expected standing not found: %d", standing.Id)
+		}
 	}
 }

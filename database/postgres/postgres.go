@@ -14,12 +14,13 @@ type PgRepository struct {
 	manager *PgManager
 }
 
-type PgLeagueRepository PgRepository
-type PgSeasonRepository PgRepository
-type PgGameRepository PgRepository
-type PgTeamRepository PgRepository
-type PgStandingRepository PgRepository
-type PgUserRepository PgRepository
+func NewPgRepository(manager *PgManager) *PgRepository {
+	repo := &PgRepository{
+		manager: manager,
+	}
+
+	return repo
+}
 
 func NewPgManager(url string) (*PgManager, error) {
 	manager := &PgManager{}
@@ -45,10 +46,11 @@ func (manager *PgManager) open(url string) error {
 
 func (manager *PgManager) close() error {
 	err := manager.db.Close()
-	manager.db = nil
 	if err != nil {
 		return err
 	}
+
+	manager.db = nil
 
 	return nil
 }
