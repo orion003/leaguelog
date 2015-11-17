@@ -23,6 +23,10 @@ type Authenticator struct {
 	token TokenService
 }
 
+type Validator struct {
+	token TokenService
+}
+
 func InitializeAuthentication(u UserService, t TokenService) *Authenticator {
 	auth := new(Authenticator)
 	auth.user = u
@@ -56,4 +60,16 @@ func generateToken(auth *Authenticator) (string, error) {
 	}
 
 	return token, nil
+}
+
+func InitializeValidation(t TokenService) *Validator {
+	v := &Validator{
+		token: t,
+	}
+
+	return v
+}
+
+func (val *Validator) ValidateToken(token string) error {
+	return val.token.Validate(token)
 }
