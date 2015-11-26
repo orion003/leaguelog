@@ -9,7 +9,6 @@ import (
 type UserService interface {
 	Exists() error
 	Save() error
-	Identifier() string
 	Claims() map[string]interface{}
 }
 
@@ -33,6 +32,22 @@ func InitializeAuthentication(u UserService, t TokenService) *Authenticator {
 	auth.token = t
 
 	return auth
+}
+
+func (auth *Authenticator) Register() (int, string) {
+	err := auth.user.Save()
+	if err != nil {
+		fmt.Printf("User not saved: %v\n", err)
+		return http.StatusUnauthorized, ""
+	}
+
+	token, err := generateToken(auth)
+	if err != nil {
+		fmt.Printf("Unable to generate token: %v\n", err)
+		return http.StatusUnauthorized, ""
+	}
+
+	return http.StatusOK, token
 }
 
 func (auth *Authenticator) Authenticate() (int, string) {

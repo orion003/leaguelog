@@ -25,6 +25,10 @@ func (u *MockUser) Exists() error {
 }
 
 func (u *MockUser) Save() error {
+	if u.id == "" || u.password == "" {
+		return errors.New("User save failed. Empty username or password")
+	}
+
 	return nil
 }
 
@@ -37,6 +41,32 @@ func (u *MockUser) Claims() map[string]interface{} {
 	claims["id"] = u.id
 
 	return claims
+}
+
+func TestUserRegisterAndGenerateToken(t *testing.T) {
+	user := &MockUser{
+		id:       "test@leaguelog.ca",
+		password: "password",
+	}
+
+	key, err := ioutil.ReadFile("testdata/hmac_key")
+	if err != nil {
+		t.Fatal("Unable to read HMAC key.")
+	}
+
+	j := InitializeJwt(key)
+
+	auth := InitializeAuthentication(user, j)
+	status, token := auth.Register()
+
+	if status != http.StatusOK {
+		t.Errorf("Status should be %d and not %d", http.StatusOK, status)
+	}
+
+	expectedToken := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RAbGVhZ3VlbG9nLmNhIn0.mkGPonVdQeQ1nTezFMVKGHvZiAY9L1dLrLDmhcV-4gvZ4bGOm8J1jSlh5eRd-eSWrOkiZqnIHRU4i1gELq2S2A"
+	if token != expectedToken {
+		t.Error("Incorrect token - expected: %s, received: %s", expectedToken, token)
+	}
 }
 
 func TestUserAuthenticateAndGenerateToken(t *testing.T) {

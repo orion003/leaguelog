@@ -46,6 +46,10 @@ func TestMain(m *testing.M) {
 	os.Exit(r)
 }
 
+func TestAuthController(t *testing.T) {
+    testUserRegister(t *testing.T)   
+}
+
 func TestAddEmail(t *testing.T) {
 	email := "test2@leaguelog.ca"
 	err := addEmail(email)
