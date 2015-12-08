@@ -68,12 +68,6 @@ func createRoutes(c *Controller) []Route {
 			c.GetLeagueSchedule,
 		},
 		Route{
-			"AddEmail",
-			"POST",
-			"/api/users",
-			c.AddEmail,
-		},
-		Route{
 			"RegisterUser",
 			"POST",
 			"/api/register",

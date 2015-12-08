@@ -38,31 +38,6 @@ func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, root+"index.html")
 }
 
-func (c *Controller) AddEmail(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	defer r.Body.Close()
-
-	var user model.User
-	err := decoder.Decode(&user)
-
-	if err != nil {
-		c.log.Error(fmt.Sprintf("Unable to decode user email JSON: %v", err))
-		w.WriteHeader(http.StatusNotAcceptable)
-	} else {
-		err = c.repo.CreateUser(&user)
-		if err != nil {
-			c.log.Error(fmt.Sprintf("AddEmail error: %v", err))
-			w.WriteHeader(http.StatusNotAcceptable)
-
-			if e := json.NewEncoder(w).Encode(jsonError(err)); e != nil {
-				c.log.Error(e.Error())
-			}
-		} else {
-			w.WriteHeader(http.StatusCreated)
-		}
-	}
-}
-
 func (c *Controller) GetLeagues(w http.ResponseWriter, r *http.Request) {
 	leagues, err := c.repo.FindAllLeagues()
 	if err != nil {
