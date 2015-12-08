@@ -1,6 +1,6 @@
 {
 	"ImportPath": "leaguelog",
-	"GoVersion": "go1.5",
+	"GoVersion": "go1.5.1",
 	"Packages": [
 		"./..."
 	],
@@ -73,6 +73,14 @@
 		{
 			"ImportPath": "github.com/mattn/go-sqlite3",
 			"Rev": "b4142c444a8941d0d92b0b7103a24df9cd815e42"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/bcrypt",
+			"Rev": "7b85b097bf7527677d54d3220065e966a0e3b613"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/blowfish",
+			"Rev": "7b85b097bf7527677d54d3220065e966a0e3b613"
 		},
 		{
 			"ImportPath": "gopkg.in/inconshreveable/log15.v2",

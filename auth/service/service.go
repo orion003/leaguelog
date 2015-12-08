@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"time"
 
-	"leaguelog/auth/service/Godeps/_workspace/src/golang.org/x/crypto/bcrypt"
+	"leaguelog/Godeps/_workspace/src/golang.org/x/crypto/bcrypt"
 )
 
 const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"

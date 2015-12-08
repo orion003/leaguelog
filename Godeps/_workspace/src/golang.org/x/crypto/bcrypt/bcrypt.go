@@ -13,7 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"leaguelog/auth/service/Godeps/_workspace/src/golang.org/x/crypto/blowfish"
+	"leaguelog/Godeps/_workspace/src/golang.org/x/crypto/blowfish"
 	"strconv"
 )
 
