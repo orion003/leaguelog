@@ -6,9 +6,9 @@ import (
 	"leaguelog/model"
 )
 
-func testFindUserById(t *testing.T) {
+func testFindUserByID(t *testing.T) {
 	id := 1
-	user, err := repo.FindUserById(id)
+	user, err := repo.FindUserByID(id)
 
 	if err != nil {
 		t.Errorf("Error finding user by id: %v\n", err)
@@ -30,7 +30,9 @@ func testFindUserByEmail(t *testing.T) {
 
 func testCreateUser(t *testing.T) {
 	user := &model.User{
-		Email: "test2@leaguelog.ca",
+		Email:    "test2@leaguelog.ca",
+		Password: "password2",
+		Salt:     "password_salt",
 	}
 
 	err := repo.CreateUser(user)
@@ -38,17 +40,19 @@ func testCreateUser(t *testing.T) {
 		t.Errorf("Error creating user: %v", err)
 	}
 
-	persistedUser, err := repo.FindUserById(user.Id)
+	persistedUser, err := repo.FindUserByID(user.ID)
 	if err != nil {
 		t.Errorf("Error finding user: %v", err)
 	}
 
-	assertUser(t, persistedUser, user.Id, user.Email)
+	assertUser(t, persistedUser, user.ID, user.Email)
 }
 
 func testInvalidUserEmail(t *testing.T) {
 	user := &model.User{
-		Email: "test_invalid_email",
+		Email:    "test_invalid_email",
+		Password: "invalid_user_password",
+		Salt:     "password_salt",
 	}
 
 	err := repo.CreateUser(user)
@@ -63,7 +67,9 @@ func testInvalidUserEmail(t *testing.T) {
 
 func testDuplicateUserEmail(t *testing.T) {
 	user := &model.User{
-		Email: "test@leaguelog.ca",
+		Email:    "test@leaguelog.ca",
+		Password: "duplicate_password",
+		Salt:     "password_salt",
 	}
 
 	err := repo.CreateUser(user)
@@ -81,8 +87,8 @@ func assertUser(t *testing.T, user *model.User, id int, email string) {
 		t.Errorf("Unable to find user with id: %d", id)
 	}
 
-	if user.Id != id {
-		t.Errorf("User ids do not match. Expected: %d, Received: %d", id, user.Id)
+	if user.ID != id {
+		t.Errorf("User ids do not match. Expected: %d, Received: %d", id, user.ID)
 	}
 
 	if user.Email != email {

@@ -18,20 +18,20 @@ func (repo *PgRepository) CreateTeam(team *model.Team) error {
 	var id int
 	err = repo.manager.db.QueryRow(`INSERT INTO team(league_id, name, created, modified)
 	    VALUES($1, $2, $3, $4) RETURNING id`,
-		team.League.Id, team.Name, t, t).Scan(&id)
+		team.League.ID, team.Name, t, t).Scan(&id)
 
 	if err != nil {
 		return err
 	}
 
-	team.Id = id
+	team.ID = id
 	team.Created = t
 	team.Modified = t
 
 	return nil
 }
 
-func (repo *PgRepository) FindTeamById(id int) (*model.Team, error) {
+func (repo *PgRepository) FindTeamByID(id int) (*model.Team, error) {
 	row := repo.manager.db.QueryRow(`
 	    SELECT
 	        t.id, t.league_id, t.name, t.created, t.modified

@@ -3,8 +3,6 @@ package service
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"testing"
 )
 
@@ -13,12 +11,14 @@ type MockUser struct {
 	password string
 }
 
+var hmac = []byte("579760E50509F2F28324421C7509741F5BF03B9158161076B3C6B39FB028D9E2C251490A3F8BD1F59728259A673668CAFEB49C9E9499F8386B147D7260B6937A")
+
 func (u *MockUser) Exists() error {
 	if u.id != "test@leaguelog.ca" {
-		return errors.New(fmt.Sprintf("Authentication failed - ID is incorrect: %s", u.id))
+		return fmt.Errorf("Authentication failed - ID is incorrect: %s", u.id)
 	}
 	if u.password != "password" {
-		return errors.New(fmt.Sprintf("Authentication failed - Password is incorrect: %s", u.password))
+		return fmt.Errorf("Authentication failed - Password is incorrect: %s", u.password)
 	}
 
 	return nil
@@ -43,29 +43,39 @@ func (u *MockUser) Claims() map[string]interface{} {
 	return claims
 }
 
+func TestGeneratePassword(t *testing.T) {
+	salt := "8YrYmqwWonIIhpUjHaSHtB"
+	password := "password"
+
+	hashed, err := GenerateHashedPassword(salt, password)
+	if err != nil {
+		t.Errorf("There should be no error hashing password: %v", err)
+	}
+
+	err = CompareHashAndPassword(hashed, salt, password)
+	if err != nil {
+		t.Errorf("Password and hash do not match: %v", err)
+	}
+}
+
 func TestUserRegisterAndGenerateToken(t *testing.T) {
 	user := &MockUser{
 		id:       "test@leaguelog.ca",
 		password: "password",
 	}
 
-	key, err := ioutil.ReadFile("testdata/hmac_key")
-	if err != nil {
-		t.Fatal("Unable to read HMAC key.")
-	}
-
-	j := InitializeJwt(key)
+	j := InitializeJwt(hmac)
 
 	auth := InitializeAuthentication(user, j)
-	status, token := auth.Register()
+	token, err := auth.Register()
 
-	if status != http.StatusOK {
-		t.Errorf("Status should be %d and not %d", http.StatusOK, status)
+	if err != nil {
+		t.Errorf("No error should be returned when registering: %v", err)
 	}
 
-	expectedToken := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RAbGVhZ3VlbG9nLmNhIn0.mkGPonVdQeQ1nTezFMVKGHvZiAY9L1dLrLDmhcV-4gvZ4bGOm8J1jSlh5eRd-eSWrOkiZqnIHRU4i1gELq2S2A"
+	expectedToken := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RAbGVhZ3VlbG9nLmNhIn0.Xx8WqprVmafi1ZaoMWiL43dC5H-Im0hTtJydprrFGWWndgeTQB91aWSan37NrIBP_rBL06Axv-MO0WJNji70kw"
 	if token != expectedToken {
-		t.Error("Incorrect token - expected: %s, received: %s", expectedToken, token)
+		t.Errorf("Incorrect token - expected: %s, received: %s", expectedToken, token)
 	}
 }
 
@@ -75,23 +85,18 @@ func TestUserAuthenticateAndGenerateToken(t *testing.T) {
 		password: "password",
 	}
 
-	key, err := ioutil.ReadFile("testdata/hmac_key")
-	if err != nil {
-		t.Fatal("Unable to read HMAC key.")
-	}
-
-	j := InitializeJwt(key)
+	j := InitializeJwt(hmac)
 
 	auth := InitializeAuthentication(user, j)
-	status, token := auth.Authenticate()
+	token, err := auth.Authenticate()
 
-	if status != http.StatusOK {
-		t.Errorf("Status should be %d and not %d", http.StatusOK, status)
+	if err != nil {
+		t.Errorf("No error should be returned when registering: %v", err)
 	}
 
-	expectedToken := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RAbGVhZ3VlbG9nLmNhIn0.mkGPonVdQeQ1nTezFMVKGHvZiAY9L1dLrLDmhcV-4gvZ4bGOm8J1jSlh5eRd-eSWrOkiZqnIHRU4i1gELq2S2A"
+	expectedToken := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RAbGVhZ3VlbG9nLmNhIn0.Xx8WqprVmafi1ZaoMWiL43dC5H-Im0hTtJydprrFGWWndgeTQB91aWSan37NrIBP_rBL06Axv-MO0WJNji70kw"
 	if token != expectedToken {
-		t.Error("Incorrect token - expected: %s, received: %s", expectedToken, token)
+		t.Errorf("Incorrect token - expected: %s, received: %s", expectedToken, token)
 	}
 }
 
@@ -101,18 +106,13 @@ func TestUserAuthenticateFailPassword(t *testing.T) {
 		password: "invalid_password",
 	}
 
-	key, err := ioutil.ReadFile("testdata/hmac_key")
-	if err != nil {
-		t.Fatal("Unable to read HMAC key.")
-	}
-
-	j := InitializeJwt(key)
+	j := InitializeJwt(hmac)
 
 	auth := InitializeAuthentication(user, j)
-	status, token := auth.Authenticate()
+	token, err := auth.Authenticate()
 
-	if status != http.StatusUnauthorized {
-		t.Errorf("Status should be %d and not %d", http.StatusUnauthorized, status)
+	if err == nil {
+		t.Errorf("Error should be returned on failed authentication.")
 	}
 
 	if token != "" {
@@ -121,17 +121,12 @@ func TestUserAuthenticateFailPassword(t *testing.T) {
 }
 
 func TestValidateTokenService(t *testing.T) {
-	token := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RAbGVhZ3VlbG9nLmNhIn0.mkGPonVdQeQ1nTezFMVKGHvZiAY9L1dLrLDmhcV-4gvZ4bGOm8J1jSlh5eRd-eSWrOkiZqnIHRU4i1gELq2S2A"
+	token := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RAbGVhZ3VlbG9nLmNhIn0.Xx8WqprVmafi1ZaoMWiL43dC5H-Im0hTtJydprrFGWWndgeTQB91aWSan37NrIBP_rBL06Axv-MO0WJNji70kw"
 
-	key, err := ioutil.ReadFile("testdata/hmac_key")
-	if err != nil {
-		t.Fatal("Unable to read HMAC key.")
-	}
-
-	j := InitializeJwt(key)
+	j := InitializeJwt(hmac)
 	val := InitializeValidation(j)
 
-	err = val.ValidateToken(token)
+	err := val.ValidateToken(token)
 	if err != nil {
 		t.Errorf("Token should be valid (%v): %s", err, token)
 	}
@@ -140,16 +135,11 @@ func TestValidateTokenService(t *testing.T) {
 func TestInvalidateTokenService(t *testing.T) {
 	token := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImludmFsaWRAbGVhZ3VlbG9nLmNhIn0.mkGPonVdQeQ1nTezFMVKGHvZiAY9L1dLrLDmhcV-4gvZ4bGOm8J1jSlh5eRd-eSWrOkiZqnIHRU4i1gELq2S2A"
 
-	key, err := ioutil.ReadFile("testdata/hmac_key")
-	if err != nil {
-		t.Fatal("Unable to read HMAC key.")
-	}
-
-	j := InitializeJwt(key)
+	j := InitializeJwt(hmac)
 	val := InitializeValidation(j)
 
-	err = val.ValidateToken(token)
+	err := val.ValidateToken(token)
 	if err == nil {
-		t.Errorf("Token should not be valid: %s", err, token)
+		t.Errorf("Token should not be valid (%s): %s", token, err)
 	}
 }

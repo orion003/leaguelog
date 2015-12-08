@@ -18,13 +18,13 @@ func (repo *PgRepository) CreateStanding(standing *model.Standing) error {
 	var id int
 	err = repo.manager.db.QueryRow(`INSERT INTO standing(season_id, team_id, wins, losses, ties, created, modified)
 	    VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-		standing.Season.Id, standing.Team.Id, standing.Wins, standing.Losses, standing.Ties, t, t).Scan(&id)
+		standing.Season.ID, standing.Team.ID, standing.Wins, standing.Losses, standing.Ties, t, t).Scan(&id)
 
 	if err != nil {
 		return err
 	}
 
-	standing.Id = id
+	standing.ID = id
 	standing.Created = t
 	standing.Modified = t
 
@@ -37,7 +37,7 @@ func (repo *PgRepository) FindAllStandingsBySeason(season *model.Season) ([]mode
         FROM standing s
         INNER JOIN team t ON s.team_id = t.id
         WHERE s.season_id = $1
-        ORDER BY s.wins DESC, s.ties DESC, s.losses DESC, t.name ASC`, season.Id)
+        ORDER BY s.wins DESC, s.ties DESC, s.losses DESC, t.name ASC`, season.ID)
 
 	if err != nil {
 		return []model.Standing{}, err

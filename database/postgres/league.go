@@ -24,7 +24,7 @@ func (repo *PgRepository) CreateLeague(league *model.League) error {
 		return err
 	}
 
-	league.Id = id
+	league.ID = id
 	league.Created = t
 	league.Modified = t
 
@@ -61,7 +61,7 @@ func (repo *PgRepository) FindAllLeagues() ([]model.League, error) {
 	return leagues, nil
 }
 
-func (repo *PgRepository) FindLeagueById(id int) (*model.League, error) {
+func (repo *PgRepository) FindLeagueByID(id int) (*model.League, error) {
 	row := repo.manager.db.QueryRow(`SELECT id, name, sport, created, modified
         FROM league
         WHERE id = $1`, id)

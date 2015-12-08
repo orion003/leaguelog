@@ -12,7 +12,7 @@ func League(row MultiScanner) (*model.League, error) {
 	//id, name, sport, created, modified
 	var league model.League
 
-	err := row.Scan(&league.Id, &league.Name, &league.Sport, &league.Created, &league.Modified)
+	err := row.Scan(&league.ID, &league.Name, &league.Sport, &league.Created, &league.Modified)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func Season(row MultiScanner) (*model.Season, error) {
 	var season model.Season
 	var league model.League
 
-	err := row.Scan(&season.Id, &league.Id, &season.Name, &season.StartDate, &season.EndDate, &season.Created, &season.Modified)
+	err := row.Scan(&season.ID, &league.ID, &season.Name, &season.StartDate, &season.EndDate, &season.Created, &season.Modified)
 
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func Team(row MultiScanner) (*model.Team, error) {
 	var team model.Team
 	var league model.League
 
-	err := row.Scan(&team.Id, &league.Id, &team.Name, &team.Created, &team.Modified)
+	err := row.Scan(&team.ID, &league.ID, &team.Name, &team.Created, &team.Modified)
 
 	if err != nil {
 		return nil, err
@@ -59,8 +59,8 @@ func StandingWithTeams(row MultiScanner) (*model.Standing, error) {
 	var league model.League
 
 	err := row.Scan(
-		&standing.Id, &season.Id, &standing.Wins, &standing.Losses, &standing.Ties, &standing.Created, &standing.Modified,
-		&team.Id, &league.Id, &team.Name, &team.Created, &team.Modified)
+		&standing.ID, &season.ID, &standing.Wins, &standing.Losses, &standing.Ties, &standing.Created, &standing.Modified,
+		&team.ID, &league.ID, &team.Name, &team.Created, &team.Modified)
 
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func Game(row MultiScanner) (*model.Game, error) {
 	var home model.Team
 	var away model.Team
 
-	err := row.Scan(&game.Id, &season.Id, &game.StartTime, &home.Id, &away.Id, &game.HomeScore, &game.AwayScore, &game.Created, &game.Modified)
+	err := row.Scan(&game.ID, &season.ID, &game.StartTime, &home.ID, &away.ID, &game.HomeScore, &game.AwayScore, &game.Created, &game.Modified)
 
 	if err != nil {
 		return nil, err
@@ -100,9 +100,9 @@ func GameWithTeams(row MultiScanner) (*model.Game, error) {
 	var home model.Team
 	var away model.Team
 
-	err := row.Scan(&game.Id, &season.Id, &game.StartTime, &game.HomeScore, &game.AwayScore, &game.Created, &game.Modified,
-		&home.Id, &homeLeague.Id, &home.Name, &home.Created, &home.Modified,
-		&away.Id, &awayLeague.Id, &away.Name, &away.Created, &away.Modified)
+	err := row.Scan(&game.ID, &season.ID, &game.StartTime, &game.HomeScore, &game.AwayScore, &game.Created, &game.Modified,
+		&home.ID, &homeLeague.ID, &home.Name, &home.Created, &home.Modified,
+		&away.ID, &awayLeague.ID, &away.Name, &away.Created, &away.Modified)
 
 	if err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func GameWithTeams(row MultiScanner) (*model.Game, error) {
 func User(row MultiScanner) (*model.User, error) {
 	var user model.User
 
-	err := row.Scan(&user.Id, &user.Email, &user.Created, &user.Modified)
+	err := row.Scan(&user.ID, &user.Email, &user.Created, &user.Modified)
 	if err != nil {
 		return nil, err
 	}

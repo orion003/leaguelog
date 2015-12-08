@@ -8,9 +8,9 @@ import (
 )
 
 func testFindMostRecentSeasonByLeague(t *testing.T) {
-	leagueId := 1
+	leagueID := 1
 
-	league, err := repo.FindLeagueById(leagueId)
+	league, err := repo.FindLeagueByID(leagueID)
 	if err != nil {
 		t.Errorf("Unable to find league for season: %v", err)
 	}
@@ -20,14 +20,14 @@ func testFindMostRecentSeasonByLeague(t *testing.T) {
 		t.Errorf("Error finding season: %v", err)
 	}
 
-	seasonId := 1
-	assertSeason(t, season, seasonId, "Test League 1 Season")
+	seasonID := 1
+	assertSeason(t, season, seasonID, "Test League 1 Season")
 }
 
 func testCreateSeason(t *testing.T) {
-	leagueId := 1
+	leagueID := 1
 
-	league, err := repo.FindLeagueById(leagueId)
+	league, err := repo.FindLeagueByID(leagueID)
 	if err != nil {
 		t.Errorf("Unable to find league for season: %v", err)
 	}
@@ -46,13 +46,13 @@ func testCreateSeason(t *testing.T) {
 		t.Error("Error creating season.", err)
 	}
 
-	persistedSeason, err := repo.FindSeasonById(season.Id)
+	persistedSeason, err := repo.FindSeasonByID(season.ID)
 	if err != nil {
-		t.Errorf("Error finding season by id: %d", season.Id)
+		t.Errorf("Error finding season by id: %d", season.ID)
 		t.Error(err)
 	}
 
-	assertSeason(t, persistedSeason, season.Id, season.Name)
+	assertSeason(t, persistedSeason, season.ID, season.Name)
 }
 
 func assertSeason(t *testing.T, season *model.Season, id int, name string) {
@@ -60,8 +60,8 @@ func assertSeason(t *testing.T, season *model.Season, id int, name string) {
 		t.Errorf("No season found with id: %d\n", id)
 	}
 
-	if season.Id != id {
-		t.Errorf("Id %d not set for season.\n", id)
+	if season.ID != id {
+		t.Errorf("ID %d not set for season.\n", id)
 	}
 
 	if season.Name != name {

@@ -5,9 +5,9 @@ import (
 )
 
 func testFindStandingsBySeason(t *testing.T) {
-	seasonId := 1
+	seasonID := 1
 
-	season, err := repo.FindSeasonById(seasonId)
+	season, err := repo.FindSeasonByID(seasonID)
 	if err != nil {
 		t.Errorf("Error finding season: %v", err)
 	}
@@ -22,16 +22,16 @@ func testFindStandingsBySeason(t *testing.T) {
 	}
 
 	for _, standing := range standings {
-		if standing.Id == 1 {
+		if standing.ID == 1 {
 			if standing.Wins != 2 && standing.Losses != 0 && standing.Ties != 0 {
-				t.Errorf("Standing %d has incorrect number of w-l-t: %d-%d-%d", standing.Id, standing.Wins, standing.Losses, standing.Ties)
+				t.Errorf("Standing %d has incorrect number of w-l-t: %d-%d-%d", standing.ID, standing.Wins, standing.Losses, standing.Ties)
 			}
-		} else if standing.Id == 2 {
+		} else if standing.ID == 2 {
 			if standing.Wins != 0 && standing.Losses != 2 && standing.Ties != 0 {
-				t.Errorf("Standing %d has incorrect number of w-l-t: %d-%d-%d", standing.Id, standing.Wins, standing.Losses, standing.Ties)
+				t.Errorf("Standing %d has incorrect number of w-l-t: %d-%d-%d", standing.ID, standing.Wins, standing.Losses, standing.Ties)
 			}
 		} else {
-			t.Errorf("Expected standing not found: %d", standing.Id)
+			t.Errorf("Expected standing not found: %d", standing.ID)
 		}
 	}
 }

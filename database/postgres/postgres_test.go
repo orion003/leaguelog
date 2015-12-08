@@ -23,7 +23,7 @@ type config struct {
 }
 
 type database struct {
-	Url  string `json:"url"`
+	URL  string `json:"url"`
 	Seed string `json:"seed"`
 	Test string `json:"test"`
 }
@@ -37,7 +37,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	url := c.Database.Url + c.Database.Test
+	url := c.Database.URL + c.Database.Test
 
 	manager, err := NewPgManager(url)
 	if err != nil {
@@ -59,7 +59,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestLeague(t *testing.T) {
-	testFindLeagueById(t)
+	testFindLeagueByID(t)
 	testCreateLeague(t)
 }
 
@@ -69,7 +69,7 @@ func TestSeason(t *testing.T) {
 }
 
 func TestTeam(t *testing.T) {
-	testFindTeamById(t)
+	testFindTeamByID(t)
 	testCreateTeam(t)
 }
 
@@ -83,7 +83,7 @@ func TestGame(t *testing.T) {
 }
 
 func TestUser(t *testing.T) {
-	testFindUserById(t)
+	testFindUserByID(t)
 	testFindUserByEmail(t)
 	testCreateUser(t)
 	testInvalidUserEmail(t)
@@ -109,7 +109,7 @@ func initialize() error {
 }
 
 func initializeTables() error {
-	db, err := sql.Open("postgres", c.Database.Url+c.Database.Seed)
+	db, err := sql.Open("postgres", c.Database.URL+c.Database.Seed)
 	if err != nil {
 		return err
 	}

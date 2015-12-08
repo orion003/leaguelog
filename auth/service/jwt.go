@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	jwt "leaguelog/Godeps/_workspace/src/github.com/dgrijalva/jwt-go"
+	jwt "leaguelog/auth/service/Godeps/_workspace/src/github.com/dgrijalva/jwt-go"
 )
 
 type Jwt struct {

@@ -1,0 +1,2 @@
+ALTER TABLE user0 DROP COLUMN password;
+ALTER TABLE user0 DROP COLUMN salt;

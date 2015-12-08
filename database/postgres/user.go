@@ -16,15 +16,15 @@ func (repo *PgRepository) CreateUser(user *model.User) error {
 	t := time.Now()
 
 	var id int
-	err = repo.manager.db.QueryRow(`INSERT INTO user0(email, created, modified)
-	    VALUES($1, $2, $3) RETURNING id`,
-		user.Email, t, t).Scan(&id)
+	err = repo.manager.db.QueryRow(`INSERT INTO user0(email, password, salt, created, modified)
+	    VALUES($1, $2, $3, $4, $5) RETURNING id`,
+		user.Email, user.Password, user.Salt, t, t).Scan(&id)
 
 	if err != nil {
 		return err
 	}
 
-	user.Id = id
+	user.ID = id
 	user.Created = t
 	user.Modified = t
 
@@ -61,7 +61,7 @@ func (repo *PgRepository) FindAllUsers() ([]model.User, error) {
 	return users, nil
 }
 
-func (repo *PgRepository) FindUserById(id int) (*model.User, error) {
+func (repo *PgRepository) FindUserByID(id int) (*model.User, error) {
 	row := repo.manager.db.QueryRow(`SELECT id, email, created, modified
         FROM user0
         WHERE id = $1`, id)

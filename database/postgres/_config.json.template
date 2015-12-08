@@ -1,5 +1,7 @@
 {
     "database": {
-        "url": "postgres://username:password@server:5432/database"
+        "url": "postgres://USERNAME:PASSWORD@SERVER:5432/",
+        "seed": "SEED_DATABASE",
+        "test": "TEST_DATABASE"
     }
 }

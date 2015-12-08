@@ -3,8 +3,13 @@ package service
 import (
 	"errors"
 	"fmt"
-	"net/http"
+	"math/rand"
+	"time"
+
+	"leaguelog/auth/service/Godeps/_workspace/src/golang.org/x/crypto/bcrypt"
 )
+
+const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 type UserService interface {
 	Exists() error
@@ -34,36 +39,36 @@ func InitializeAuthentication(u UserService, t TokenService) *Authenticator {
 	return auth
 }
 
-func (auth *Authenticator) Register() (int, string) {
+func (auth *Authenticator) Register() (string, error) {
 	err := auth.user.Save()
 	if err != nil {
 		fmt.Printf("User not saved: %v\n", err)
-		return http.StatusUnauthorized, ""
+		return "", err
 	}
 
 	token, err := generateToken(auth)
 	if err != nil {
 		fmt.Printf("Unable to generate token: %v\n", err)
-		return http.StatusUnauthorized, ""
+		return "", err
 	}
 
-	return http.StatusOK, token
+	return token, nil
 }
 
-func (auth *Authenticator) Authenticate() (int, string) {
+func (auth *Authenticator) Authenticate() (string, error) {
 	err := auth.user.Exists()
 	if err != nil {
 		fmt.Printf("User not found: %v\n", err)
-		return http.StatusUnauthorized, ""
+		return "", err
 	}
 
 	token, err := generateToken(auth)
 	if err != nil {
 		fmt.Printf("Unable to generate token: %v\n", err)
-		return http.StatusUnauthorized, ""
+		return "", err
 	}
 
-	return http.StatusOK, token
+	return token, nil
 }
 
 func generateToken(auth *Authenticator) (string, error) {
@@ -87,4 +92,29 @@ func InitializeValidation(t TokenService) *Validator {
 
 func (val *Validator) ValidateToken(token string) error {
 	return val.token.Validate(token)
+}
+
+func GenerateRandomSalt(n int) string {
+	rand.Seed(time.Now().UnixNano())
+	length := len(characters)
+
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = characters[rand.Intn(length)]
+	}
+
+	return string(b)
+}
+
+func GenerateHashedPassword(salt string, password string) (string, error) {
+	combined := salt + password
+	hashed, err := bcrypt.GenerateFromPassword([]byte(combined), 11)
+
+	return string(hashed), err
+}
+
+func CompareHashAndPassword(hash string, salt string, password string) error {
+	combined := salt + password
+
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(combined))
 }

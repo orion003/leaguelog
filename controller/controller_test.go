@@ -13,12 +13,13 @@ import (
 	"testing"
 	"time"
 
+	"leaguelog/auth/service"
 	"leaguelog/database/postgres"
 	"leaguelog/logging"
 	"leaguelog/model"
 )
 
-var log logging.Logger = logging.NewLog15()
+var log = logging.NewLog15()
 
 var server *httptest.Server
 var controller *Controller
@@ -30,81 +31,32 @@ type config struct {
 }
 
 type database struct {
-	Url  string `json:"url"`
+	URL  string `json:"url"`
 	Seed string `json:"seed"`
 	Test string `json:"test"`
 }
 
 func TestMain(m *testing.M) {
 	controller = NewController(log)
-	initialize(controller)
+	err := initialize(controller)
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to initialize tests: %v", err))
+		os.Exit(1)
+	}
 
 	server = httptest.NewServer(NewRouter(controller, ""))
 
 	r := m.Run()
 
+	server.Close()
 	os.Exit(r)
 }
 
 func TestAuthController(t *testing.T) {
-    testUserRegister(t *testing.T)   
-}
-
-func TestAddEmail(t *testing.T) {
-	email := "test2@leaguelog.ca"
-	err := addEmail(email)
-	if err != nil {
-		t.Errorf("Unable to add email: %s - %v", email, err)
-	}
-}
-
-func TestDuplicateEmail(t *testing.T) {
-	email := "test@leaguelog.ca"
-	err := addEmail(email)
-	if err == nil {
-		t.Errorf("Duplicate email not allowed: %s", email)
-	}
-
-	if err.Error() != model.UserDuplicateEmail.Error() {
-		t.Errorf("Should be duplicate email error: %s", err)
-	}
-}
-
-func TestInvalidEmail(t *testing.T) {
-	email := "test_invalid"
-
-	err := addEmail(email)
-	if err == nil {
-		t.Errorf("Invalid email not allowed: %s", email)
-	}
-
-	if err.Error() != model.UserInvalidEmail.Error() {
-		t.Errorf("Should be invalid email error: %s", err)
-	}
-}
-
-func addEmail(email string) error {
-	data := fmt.Sprintf("{\"email\": \"%s\"}", email)
-
-	body, err := post("/api/users", data)
-
-	if len(body) > 0 {
-		var r map[string]interface{}
-		err = json.Unmarshal(body, &r)
-		if err != nil {
-			return err
-		}
-
-		if e, ok := r["error"]; ok {
-			if s, ok := e.(string); ok {
-				return errors.New(s)
-			}
-
-			return errors.New("String value not found for json error.")
-		}
-	}
-
-	return nil
+	testUserRegister(t)
+	testDuplicateEmailRegister(t)
+	testInvalidEmailRegister(t)
+	testMissingPasswordRegister(t)
 }
 
 func TestGetLeagues(t *testing.T) {
@@ -127,9 +79,9 @@ func TestGetLeagues(t *testing.T) {
 }
 
 func TestGetStandings(t *testing.T) {
-	leagueId := 1
+	leagueID := 1
 
-	body, err := request(fmt.Sprintf("/api/league/%d/standings", leagueId))
+	body, err := request(fmt.Sprintf("/api/league/%d/standings", leagueID))
 	if err != nil {
 		t.Errorf("Unable to obtain body: %v", err)
 	}
@@ -149,20 +101,20 @@ func TestGetStandings(t *testing.T) {
 }
 
 func TestGetSchedule(t *testing.T) {
-	seasonId := 1
-	season, err := controller.repo.FindSeasonById(seasonId)
+	seasonID := 1
+	season, err := controller.repo.FindSeasonByID(seasonID)
 	if err != nil {
 		t.Errorf("Unable to find season: %v", err)
 	}
 
-	homeTeamId := 1
-	homeTeam, err := controller.repo.FindTeamById(homeTeamId)
+	homeTeamID := 1
+	homeTeam, err := controller.repo.FindTeamByID(homeTeamID)
 	if err != nil {
 		t.Errorf("Unable to find home team: %v", err)
 	}
 
-	awayTeamId := 1
-	awayTeam, err := controller.repo.FindTeamById(awayTeamId)
+	awayTeamID := 1
+	awayTeam, err := controller.repo.FindTeamByID(awayTeamID)
 	if err != nil {
 		t.Errorf("Unable to find away team: %v", err)
 	}
@@ -179,8 +131,8 @@ func TestGetSchedule(t *testing.T) {
 	}
 	err = controller.repo.CreateGame(game)
 
-	leagueId := 1
-	body, err := request(fmt.Sprintf("/api/league/%d/schedule", leagueId))
+	leagueID := 1
+	body, err := request(fmt.Sprintf("/api/league/%d/schedule", leagueID))
 	if err != nil {
 		t.Errorf("Unable to obtain body: %v", err)
 	}
@@ -204,13 +156,13 @@ func TestGetSchedule(t *testing.T) {
 	}
 }
 
-func request(rUrl string) ([]byte, error) {
-	u := fmt.Sprintf("%s%s", server.URL, rUrl)
+func request(rURL string) ([]byte, error) {
+	u := fmt.Sprintf("%s%s", server.URL, rURL)
 	controller.log.Info(fmt.Sprintf("Test Request: %s", u))
 
 	res, err := http.DefaultClient.Get(u)
 	if err != nil {
-		fmt.Printf("Unable to access %s: %v\n", err)
+		fmt.Printf("Unable to access %s: %v\n", u, err)
 		return []byte{}, err
 	}
 
@@ -220,26 +172,26 @@ func request(rUrl string) ([]byte, error) {
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Printf("Unable to read body: %v\n", u, err)
+		fmt.Printf("Unable to read body: %v\n", err)
 		return []byte{}, err
 	}
 
 	return body, nil
 }
 
-func post(rUrl string, data string) ([]byte, error) {
-	u := fmt.Sprintf("%s%s", server.URL, rUrl)
+func post(rURL string, data string) ([]byte, error) {
+	u := fmt.Sprintf("%s%s", server.URL, rURL)
 
 	res, err := http.DefaultClient.Post(u, "application/json", strings.NewReader(data))
 	if err != nil {
 		return []byte{}, err
 	}
 
-	defer res.Body.Close()
-
 	controller.log.Info(fmt.Sprintf("HTTP Status: %d", res.StatusCode))
 
 	body, err := ioutil.ReadAll(res.Body)
+	defer res.Body.Close()
+
 	if err != nil {
 		return []byte{}, err
 	}
@@ -263,11 +215,14 @@ func initialize(controller *Controller) error {
 	repo := initializeRepo()
 	controller.SetRepository(repo)
 
+	token := initializeToken()
+	controller.SetTokenService(token)
+
 	return nil
 }
 
 func initializeTables() error {
-	db, err := sql.Open("postgres", c.Database.Url+c.Database.Seed)
+	db, err := sql.Open("postgres", c.Database.URL+c.Database.Seed)
 	if err != nil {
 		return err
 	}
@@ -290,7 +245,7 @@ func initializeTables() error {
 }
 
 func initializeRepo() model.Repository {
-	url := c.Database.Url + c.Database.Test
+	url := c.Database.URL + c.Database.Test
 
 	manager, err := postgres.NewPgManager(url)
 	if err != nil {
@@ -299,4 +254,10 @@ func initializeRepo() model.Repository {
 	}
 
 	return postgres.NewPgRepository(manager)
+}
+
+func initializeToken() service.TokenService {
+	var hmac = []byte("579760E50509F2F28324421C7509741F5BF03B9158161076B3C6B39FB028D9E2C251490A3F8BD1F59728259A673668CAFEB49C9E9499F8386B147D7260B6937A")
+
+	return service.InitializeJwt(hmac)
 }

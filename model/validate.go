@@ -98,6 +98,10 @@ func (user *User) Validate(repo Repository) error {
 		return UserInvalidEmail
 	}
 
+	if user.Password == "" {
+		return UserInvalidPassword
+	}
+
 	u, _ := repo.FindUserByEmail(user.Email)
 	if u != nil {
 		return UserDuplicateEmail

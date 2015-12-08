@@ -52,19 +52,19 @@ func createRoutes(c *Controller) []Route {
 		Route{
 			"Leagues",
 			"GET",
-			"/api/league/{leagueId:[0-9]+}",
+			"/api/league/{leagueID:[0-9]+}",
 			c.GetLeague,
 		},
 		Route{
 			"League.Standings",
 			"GET",
-			"/api/league/{leagueId:[0-9]+}/standings",
+			"/api/league/{leagueID:[0-9]+}/standings",
 			c.GetLeagueStandings,
 		},
 		Route{
 			"League.Schedule",
 			"GET",
-			"/api/league/{leagueId:[0-9]+}/schedule",
+			"/api/league/{leagueID:[0-9]+}/schedule",
 			c.GetLeagueSchedule,
 		},
 		Route{
@@ -72,6 +72,12 @@ func createRoutes(c *Controller) []Route {
 			"POST",
 			"/api/users",
 			c.AddEmail,
+		},
+		Route{
+			"RegisterUser",
+			"POST",
+			"/api/register",
+			c.RegisterUser,
 		},
 	}
 

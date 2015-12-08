@@ -8,8 +8,8 @@ import (
 )
 
 func testFindAllGamesAfterDateBySeason(t *testing.T) {
-	seasonId := 1
-	season, err := repo.FindSeasonById(seasonId)
+	seasonID := 1
+	season, err := repo.FindSeasonByID(seasonID)
 	if err != nil {
 		t.Errorf("Error finding season: %v", err)
 	}
@@ -27,20 +27,20 @@ func testFindAllGamesAfterDateBySeason(t *testing.T) {
 }
 
 func testCreateGame(t *testing.T) {
-	seasonId := 1
-	season, err := repo.FindSeasonById(seasonId)
+	seasonID := 1
+	season, err := repo.FindSeasonByID(seasonID)
 	if err != nil {
 		t.Errorf("Unable to find season for game: %v", err)
 	}
 
-	homeTeamId := 1
-	homeTeam, err := repo.FindTeamById(homeTeamId)
+	homeTeamID := 1
+	homeTeam, err := repo.FindTeamByID(homeTeamID)
 	if err != nil {
 		t.Errorf("Unable to find home team for game: %v", err)
 	}
 
-	awayTeamId := 2
-	awayTeam, err := repo.FindTeamById(awayTeamId)
+	awayTeamID := 2
+	awayTeam, err := repo.FindTeamByID(awayTeamID)
 	if err != nil {
 		t.Errorf("Unable to find away team for game: %v", err)
 	}

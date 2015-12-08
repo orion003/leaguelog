@@ -18,20 +18,20 @@ func (repo *PgRepository) CreateGame(game *model.Game) error {
 	var id int
 	err = repo.manager.db.QueryRow(`INSERT INTO game(season_id, start_time, home_team_id, away_team_id, created, modified)
 	    VALUES($1, $2, $3, $4, $5, $6) RETURNING id`,
-		game.Season.Id, game.StartTime, game.HomeTeam.Id, game.AwayTeam.Id, t, t).Scan(&id)
+		game.Season.ID, game.StartTime, game.HomeTeam.ID, game.AwayTeam.ID, t, t).Scan(&id)
 
 	if err != nil {
 		return err
 	}
 
-	game.Id = id
+	game.ID = id
 	game.Created = t
 	game.Modified = t
 
 	return nil
 }
 
-func (repo *PgRepository) FindGameById(id int) (*model.Game, error) {
+func (repo *PgRepository) FindGameByID(id int) (*model.Game, error) {
 	row := repo.manager.db.QueryRow(`
 	    SELECT g.id, g.season_id, g.start_time, g.home_team_id, g.away_team_id, g.home_score, g.away_score, g.created, g.modified
         FROM game g
@@ -55,7 +55,7 @@ func (repo *PgRepository) FindAllGamesAfterDateBySeason(season *model.Season, af
         INNER JOIN team t2 on g.away_team_id = t2.id
         WHERE g.season_id = $1
             AND g.start_time >= $2
-        ORDER BY g.start_time ASC`, season.Id, after)
+        ORDER BY g.start_time ASC`, season.ID, after)
 
 	if err != nil {
 		return []model.Game{}, err

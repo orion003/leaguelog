@@ -6,31 +6,31 @@ import (
 
 type Repository interface {
 	CreateLeague(league *League) error
-	FindLeagueById(id int) (*League, error)
+	FindLeagueByID(id int) (*League, error)
 	FindAllLeagues() ([]League, error)
 
 	CreateSeason(season *Season) error
-	FindSeasonById(id int) (*Season, error)
+	FindSeasonByID(id int) (*Season, error)
 	FindMostRecentSeasonByLeague(league *League) (*Season, error)
 
 	CreateTeam(team *Team) error
-	FindTeamById(id int) (*Team, error)
+	FindTeamByID(id int) (*Team, error)
 
 	CreateStanding(standing *Standing) error
 	FindAllStandingsBySeason(season *Season) ([]Standing, error)
 
 	CreateGame(game *Game) error
-	FindGameById(id int) (*Game, error)
+	FindGameByID(id int) (*Game, error)
 	FindAllGamesAfterDateBySeason(season *Season, t *time.Time) ([]Game, error)
 
 	CreateUser(user *User) error
-	FindUserById(id int) (*User, error)
+	FindUserByID(id int) (*User, error)
 	FindUserByEmail(email string) (*User, error)
 	FindAllUsers() ([]User, error)
 }
 
 type Model struct {
-	Id       int       `json:"id"`
+	ID       int       `json:"id"`
 	Created  time.Time `json:"created"`
 	Modified time.Time `json:"modified"`
 }
@@ -75,6 +75,8 @@ type Game struct {
 }
 
 type User struct {
-	Model `json:"model"`
-	Email string `json:"email"`
+	Model    `json:"model"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Salt     string `json:"salt"`
 }

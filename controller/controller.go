@@ -9,12 +9,14 @@ import (
 
 	"leaguelog/Godeps/_workspace/src/github.com/gorilla/mux"
 
+	"leaguelog/auth/service"
 	"leaguelog/logging"
 	"leaguelog/model"
 )
 
 type Controller struct {
-	repo model.Repository
+	repo  model.Repository
+	token service.TokenService
 
 	log logging.Logger
 }
@@ -79,57 +81,57 @@ func (c *Controller) GetLeagues(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) GetLeague(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	leagueId, err := strconv.Atoi(vars["leagueId"])
+	leagueID, err := strconv.Atoi(vars["leagueID"])
 	if err != nil {
-		c.log.Error("League ID not available: %v", err)
+		c.log.Error(fmt.Sprintf("League ID not available: %v", err))
 	}
 
-	league, err := c.repo.FindLeagueById(leagueId)
+	league, err := c.repo.FindLeagueByID(leagueID)
 	if err != nil {
-		c.log.Error("Unable to find league: %v", err)
+		c.log.Error(fmt.Sprintf("Unable to find league: %v", err))
 	}
 
 	err = c.jsonResponse(w, league)
 	if err != nil {
-		c.log.Error("Unable to get league: %v", err)
+		c.log.Error(fmt.Sprintf("Unable to get league: %v", err))
 	}
 }
 
 func (c *Controller) GetLeagueStandings(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	leagueId, err := strconv.Atoi(vars["leagueId"])
+	leagueID, err := strconv.Atoi(vars["leagueID"])
 
-	league := &model.League{Model: model.Model{Id: leagueId}}
+	league := &model.League{Model: model.Model{ID: leagueID}}
 	season, err := c.repo.FindMostRecentSeasonByLeague(league)
 	if err != nil {
-		c.log.Error(fmt.Sprintf("Error finding season for league %d: %v", league.Id, err))
+		c.log.Error(fmt.Sprintf("Error finding season for league %d: %v", league.ID, err))
 	}
 	standings, err := c.repo.FindAllStandingsBySeason(season)
 	if err != nil {
-		c.log.Error(fmt.Sprintf("Error finding standings for season %d: %v", season.Id, err))
+		c.log.Error(fmt.Sprintf("Error finding standings for season %d: %v", season.ID, err))
 	}
 
 	err = c.jsonResponse(w, standings)
 	if err != nil {
-		c.log.Error("Unable to get league standings: %v", err)
+		c.log.Error(fmt.Sprintf("Unable to get league standings: %v", err))
 	}
 }
 
 func (c *Controller) GetLeagueSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	leagueId, err := strconv.Atoi(vars["leagueId"])
+	leagueID, err := strconv.Atoi(vars["leagueID"])
 
-	league := &model.League{Model: model.Model{Id: leagueId}}
+	league := &model.League{Model: model.Model{ID: leagueID}}
 	season, err := c.repo.FindMostRecentSeasonByLeague(league)
 	if err != nil {
-		c.log.Error(fmt.Sprintf("Error finding season for league %d: %v", league.Id, err))
+		c.log.Error(fmt.Sprintf("Error finding season for league %d: %v", league.ID, err))
 	}
 
 	year, month, day := time.Now().Date()
 	gameTime := time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
 	games, err := c.repo.FindAllGamesAfterDateBySeason(season, &gameTime)
 	if err != nil {
-		c.log.Error(fmt.Sprintf("Error finding games for season %d: %v", season.Id, err))
+		c.log.Error(fmt.Sprintf("Error finding games for season %d: %v", season.ID, err))
 	}
 
 	schedule := make(map[time.Time][]model.Game)
@@ -166,10 +168,9 @@ func (c *Controller) jsonResponse(w http.ResponseWriter, v interface{}) error {
 		c.log.Error(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return err
-	} else {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	}
 
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	return nil
 }
 

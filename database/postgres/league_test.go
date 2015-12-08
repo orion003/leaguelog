@@ -6,9 +6,9 @@ import (
 	"leaguelog/model"
 )
 
-func testFindLeagueById(t *testing.T) {
+func testFindLeagueByID(t *testing.T) {
 	id := 1
-	league, err := repo.FindLeagueById(id)
+	league, err := repo.FindLeagueByID(id)
 
 	if err != nil {
 		t.Errorf("Error finding league by id: %v\n", err)
@@ -28,13 +28,13 @@ func testCreateLeague(t *testing.T) {
 		t.Errorf("Error creating league: %v\n", err)
 	}
 
-	persistedLeague, err := repo.FindLeagueById(league.Id)
+	persistedLeague, err := repo.FindLeagueByID(league.ID)
 	if err != nil {
-		t.Errorf("Error finding league by id: %d\n", league.Id)
+		t.Errorf("Error finding league by id: %d\n", league.ID)
 		t.Error(err)
 	}
 
-	assertLeague(t, persistedLeague, league.Id, league.Name, league.Sport)
+	assertLeague(t, persistedLeague, league.ID, league.Name, league.Sport)
 }
 
 func assertLeague(t *testing.T, league *model.League, id int, name string, sport string) {
@@ -42,7 +42,7 @@ func assertLeague(t *testing.T, league *model.League, id int, name string, sport
 		t.Errorf("No league found with id: %d\n", id)
 	}
 
-	if league.Id != id {
+	if league.ID != id {
 		t.Errorf("Id %d not set for league.\n", id)
 	}
 
