@@ -3,7 +3,6 @@ package controller
 import (
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -38,25 +37,15 @@ type database struct {
 
 func TestMain(m *testing.M) {
 	controller = NewController(log)
-	err := initialize(controller)
-	if err != nil {
-		log.Error(fmt.Sprintf("Unable to initialize tests: %v", err))
-		os.Exit(1)
-	}
+	initialize()
 
 	server = httptest.NewServer(NewRouter(controller, ""))
 
 	r := m.Run()
 
 	server.Close()
+	controller.repo.Close()
 	os.Exit(r)
-}
-
-func TestAuthController(t *testing.T) {
-	testUserRegister(t)
-	testDuplicateEmailRegister(t)
-	testInvalidEmailRegister(t)
-	testMissingPasswordRegister(t)
 }
 
 func TestGetLeagues(t *testing.T) {
@@ -199,17 +188,20 @@ func post(rURL string, data string) ([]byte, error) {
 	return body, nil
 }
 
-func initialize(controller *Controller) error {
+func initialize() error {
 	file, err := ioutil.ReadFile("./_config.json")
 	if err != nil {
-		return errors.New("Unable to open file: _config.json")
+		log.Error(fmt.Sprintf("Unable to open file: %s", "./_config.json"))
+		log.Error(fmt.Sprintf("Unable to initialize tests: %v", err))
+		os.Exit(1)
 	}
 
 	json.Unmarshal(file, &c)
 
-	err = initializeTables()
+	err = initializeDatabase()
 	if err != nil {
-		return err
+		log.Error(fmt.Sprintf("Unable to initialize tests: %v", err))
+		os.Exit(1)
 	}
 
 	repo := initializeRepo()
@@ -221,12 +213,11 @@ func initialize(controller *Controller) error {
 	return nil
 }
 
-func initializeTables() error {
+func initializeDatabase() error {
 	db, err := sql.Open("postgres", c.Database.URL+c.Database.Seed)
 	if err != nil {
 		return err
 	}
-
 	defer db.Close()
 
 	log.Info(fmt.Sprintf("Dropping database: %s", c.Database.Test))

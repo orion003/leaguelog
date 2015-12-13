@@ -27,6 +27,8 @@ type Repository interface {
 	FindUserByID(id int) (*User, error)
 	FindUserByEmail(email string) (*User, error)
 	FindAllUsers() ([]User, error)
+
+	Close() error
 }
 
 type Model struct {

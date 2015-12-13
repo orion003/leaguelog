@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "leaguelog/Godeps/_workspace/src/github.com/lib/pq"
 )
@@ -20,6 +21,15 @@ func NewPgRepository(manager *PgManager) *PgRepository {
 	}
 
 	return repo
+}
+
+func (repo *PgRepository) Close() error {
+	if repo.manager != nil {
+		return repo.manager.close()
+	}
+
+	fmt.Println("No Postgres manager found for repo.")
+	return nil
 }
 
 func NewPgManager(url string) (*PgManager, error) {

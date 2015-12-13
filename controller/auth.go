@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -39,7 +38,23 @@ func (au *AuthUser) Save() error {
 }
 
 func (au *AuthUser) Exists() error {
-	return errors.New("User does not exist.")
+	repo := au.controller.repo
+	user, err := repo.FindUserByEmail(au.user.Email)
+	if err != nil {
+		au.controller.log.Error(fmt.Sprintf("Unable to find user (%s) by email: %v", au.user.Email, err))
+		return model.UserUnknownEmail
+	}
+	if user == nil {
+		au.controller.log.Error(fmt.Sprintf("Email not found: %v", au.user.Email))
+		return model.UserUnknownEmail
+	}
+
+	err = service.CompareHashAndPassword(user.Password, user.Salt, au.user.Password)
+	if err != nil {
+		return model.UserIncorrectPassword
+	}
+
+	return nil
 }
 
 func (au *AuthUser) Claims() map[string]interface{} {
@@ -50,33 +65,54 @@ func (c *Controller) SetTokenService(t service.TokenService) {
 	c.token = t
 }
 
-func (c *Controller) RegisterUser(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) UserRegister(w http.ResponseWriter, r *http.Request) {
+	c.userControllerHandler(w, r, register)
+}
+
+func (c *Controller) UserLogin(w http.ResponseWriter, r *http.Request) {
+	c.userControllerHandler(w, r, login)
+}
+
+func (c *Controller) userControllerHandler(w http.ResponseWriter, r *http.Request, fn func(c *Controller, u *model.User) (string, error)) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
 	var user model.User
 	err := decoder.Decode(&user)
-
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Unable to decode user JSON: %v", err))
 		w.WriteHeader(http.StatusNotAcceptable)
 	}
 
-	token, err := register(c, &user)
+	token, err := fn(c, &user)
 	if err != nil {
-		handleRegisterError(w, err)
+		handleAuthenticationError(w, err)
 	} else {
 		handleTokenResponse(w, token)
 	}
 }
 
-func register(controller *Controller, user *model.User) (string, error) {
+var register = func(controller *Controller, user *model.User) (string, error) {
 	us := AuthUser{user: user, controller: controller}
 	tokenService := controller.token
 
 	auth := service.InitializeAuthentication(&us, tokenService)
 
 	token, err := auth.Register()
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
+}
+
+var login = func(controller *Controller, user *model.User) (string, error) {
+	us := AuthUser{user: user, controller: controller}
+	tokenService := controller.token
+
+	auth := service.InitializeAuthentication(&us, tokenService)
+
+	token, err := auth.Authenticate()
 	if err != nil {
 		return "", err
 	}
@@ -96,7 +132,7 @@ func handleTokenResponse(w http.ResponseWriter, token string) {
 	}
 }
 
-func handleRegisterError(w http.ResponseWriter, err error) {
+func handleAuthenticationError(w http.ResponseWriter, err error) {
 	fmt.Printf("RegisterUser error: %v\n", err)
 	w.WriteHeader(http.StatusNotAcceptable)
 

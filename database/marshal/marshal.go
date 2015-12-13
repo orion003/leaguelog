@@ -121,7 +121,7 @@ func GameWithTeams(row MultiScanner) (*model.Game, error) {
 func User(row MultiScanner) (*model.User, error) {
 	var user model.User
 
-	err := row.Scan(&user.ID, &user.Email, &user.Created, &user.Modified)
+	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.Salt, &user.Created, &user.Modified)
 	if err != nil {
 		return nil, err
 	}

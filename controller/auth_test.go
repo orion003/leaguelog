@@ -9,67 +9,104 @@ import (
 	"leaguelog/model"
 )
 
-func testUserRegister(t *testing.T) {
-	email := "test_register@leaguelog.ca"
-	password := "test_password"
+type testLogin struct {
+	email    string
+	password string
+	token    string
+	err      error
+}
 
-	data := fmt.Sprintf(`{"email": "%s", "password": "%s"}`, email, password)
+var registrations = []testLogin{
+	testLogin{
+		email:    "test_register@leaguelog.ca",
+		password: "test_password",
+		err:      nil,
+	},
+	testLogin{
+		email:    "test@leaguelog.ca",
+		password: "duplicate_password",
+		err:      model.UserDuplicateEmail,
+	},
+	testLogin{
+		email:    "test_invalid",
+		password: "invalid_password",
+		err:      model.UserInvalidEmail,
+	},
+	testLogin{
+		email:    "test_missing_password@leaguelog.ca",
+		password: "",
+		err:      model.UserInvalidPassword,
+	},
+}
 
-	err := addUser(data)
-	if err != nil {
-		t.Errorf("Unable to add user: %s - %v", email, err)
+var logins = []testLogin{
+	testLogin{
+		email:    "test@leaguelog.ca",
+		password: "password",
+		err:      nil,
+	},
+	testLogin{
+		email:    "test@leaguelog.ca",
+		password: "incorrect_password",
+		err:      model.UserIncorrectPassword,
+	},
+	testLogin{
+		email:    "test_unknown@leaguelog.ca",
+		password: "unknown_password",
+		err:      model.UserUnknownEmail,
+	},
+}
+
+func TestUserRegister(t *testing.T) {
+	for _, reg := range registrations {
+		data := fmt.Sprintf(`{"email": "%s", "password": "%s"}`, reg.email, reg.password)
+
+		err := sendRegisterRequest(data)
+
+		if err == nil && reg.err != nil {
+			t.Errorf("Error should have been received: %v", reg.err)
+		}
+
+		if err != nil && reg.err == nil {
+			t.Errorf("Error should not have been received: %v", err)
+		}
+
+		if err != nil && reg.err != nil && err.Error() != reg.err.Error() {
+			t.Errorf("Incorrect error received. Expected: %v, Received: %v", reg.err, err)
+		}
 	}
 }
 
-func testDuplicateEmailRegister(t *testing.T) {
-	email := "test@leaguelog.ca"
-	password := "duplicate_password"
+func TestUserLogin(t *testing.T) {
+	for _, l := range logins {
+		data := fmt.Sprintf(`{"email": "%s", "password": "%s"}`, l.email, l.password)
 
-	data := fmt.Sprintf(`{"email": "%s", "password": "%s"}`, email, password)
+		err := sendLoginRequest(data)
 
-	err := addUser(data)
-	if err == nil {
-		t.Errorf("Duplicate email not allowed: %s", email)
-	}
+		if err == nil && l.err != nil {
+			t.Errorf("Error should have been received: %v", l.err)
+		}
 
-	if err.Error() != model.UserDuplicateEmail.Error() {
-		t.Errorf("Should be duplicate email error: %s", err)
-	}
-}
+		if err != nil && l.err == nil {
+			t.Errorf("Error should not have been received: %v", err)
+		}
 
-func testInvalidEmailRegister(t *testing.T) {
-	email := "test_invalid"
-	password := "invalid_password"
-
-	data := fmt.Sprintf(`{"email": "%s", "password": "%s"}`, email, password)
-
-	err := addUser(data)
-	if err == nil {
-		t.Errorf("Invalid email not allowed: %s", email)
-	}
-
-	if err.Error() != model.UserInvalidEmail.Error() {
-		t.Errorf("Should be invalid email error: %s", err)
+		if err != nil && l.err != nil && err.Error() != l.err.Error() {
+			t.Errorf("Incorrect error received. Expected: %v, Received: %v", l.err, err)
+		}
 	}
 }
 
-func testMissingPasswordRegister(t *testing.T) {
-	email := "missing_password@leaguelog.ca"
-
-	data := fmt.Sprintf(`{"email": "%s"}`, email)
-
-	err := addUser(data)
-	if err == nil {
-		t.Error("Invalid password not allowed.")
-	}
-
-	if err.Error() != model.UserInvalidPassword.Error() {
-		t.Errorf("Should be invalid password error: %s", err)
-	}
+func sendRegisterRequest(data string) error {
+	return sendAuthRequest("/api/user/register", data)
 }
 
-func addUser(data string) error {
-	body, err := post("/api/register", data)
+func sendLoginRequest(data string) error {
+	return sendAuthRequest("/api/user/login", data)
+}
+
+func sendAuthRequest(url string, data string) error {
+	body, err := post(url, data)
 	if err != nil {
 		return fmt.Errorf("Unsuccessful post: %v\n", err)
 	}

@@ -32,7 +32,7 @@ func (repo *PgRepository) CreateUser(user *model.User) error {
 }
 
 func (repo *PgRepository) FindAllUsers() ([]model.User, error) {
-	rows, err := repo.manager.db.Query(`SELECT id, email, created, modified
+	rows, err := repo.manager.db.Query(`SELECT id, email, password, salt, created, modified
         FROM user0`)
 
 	if err != nil {
@@ -62,7 +62,7 @@ func (repo *PgRepository) FindAllUsers() ([]model.User, error) {
 }
 
 func (repo *PgRepository) FindUserByID(id int) (*model.User, error) {
-	row := repo.manager.db.QueryRow(`SELECT id, email, created, modified
+	row := repo.manager.db.QueryRow(`SELECT id, email, password, salt, created, modified
         FROM user0
         WHERE id = $1`, id)
 
@@ -72,7 +72,7 @@ func (repo *PgRepository) FindUserByID(id int) (*model.User, error) {
 }
 
 func (repo *PgRepository) FindUserByEmail(email string) (*model.User, error) {
-	row := repo.manager.db.QueryRow(`SELECT id, email, created, modified
+	row := repo.manager.db.QueryRow(`SELECT id, email, password, salt, created, modified
         FROM user0
         WHERE email = $1`, email)
 
