@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"leaguelog/auth/service"
 	"leaguelog/model"
@@ -58,7 +59,13 @@ func (au *AuthUser) Exists() error {
 }
 
 func (au *AuthUser) Claims() map[string]interface{} {
-	return make(map[string]interface{})
+	claims := make(map[string]interface{})
+	claims["iss"] = "leaguelog.ca"
+	claims["iat"] = time.Now().Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	claims["uid"] = au.user.Email
+
+	return claims
 }
 
 func (c *Controller) SetTokenService(t service.TokenService) {
