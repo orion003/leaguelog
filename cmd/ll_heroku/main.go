@@ -47,8 +47,7 @@ func initializeRepo(c *controller.Controller) {
 }
 
 func initializeTokenService(c *controller.Controller) {
-	hmac := []byte("4bab192f03bd92e7c95ee7a1d754ab0ae453d4bc1df803bf2fdde7e4ff58b895c0af2f0cf0f6b3522f0b53f11548a1240ef07c3bf4e098e4b940f26f0cb7925a")
-	ts := jwt.InitializeJwt(hmac)
+	ts := jwt.InitializeJwt([]byte(conf.Auth.Key))
 
 	c.SetTokenService(ts)
 }
@@ -69,9 +68,15 @@ func initializeConfig() error {
 		return errors.New("Unable to determine the database.")
 	}
 
+	key := os.Getenv("HMAC_KEY")
+	if key == "" {
+		return errors.New("Unable to obtain the authentication key.")
+	}
+
 	conf = config.Config{
 		Database: config.Database{Url: db},
 		Routing:  config.Routing{Root: root, Port: port},
+		Auth:     config.Auth{Key: key},
 	}
 
 	return nil
