@@ -1,9 +1,11 @@
-package service
+package auth
 
 import (
 	"errors"
 	"fmt"
 	"testing"
+
+	"leaguelog/auth/jwt"
 )
 
 type MockUser struct {
@@ -64,7 +66,7 @@ func TestUserRegisterAndGenerateToken(t *testing.T) {
 		password: "password",
 	}
 
-	j := InitializeJwt(hmac)
+	j := jwt.InitializeJwt(hmac)
 
 	auth := InitializeAuthentication(user, j)
 	token, err := auth.Register()
@@ -85,7 +87,7 @@ func TestUserAuthenticateAndGenerateToken(t *testing.T) {
 		password: "password",
 	}
 
-	j := InitializeJwt(hmac)
+	j := jwt.InitializeJwt(hmac)
 
 	auth := InitializeAuthentication(user, j)
 	token, err := auth.Authenticate()
@@ -106,7 +108,7 @@ func TestUserAuthenticateFailPassword(t *testing.T) {
 		password: "invalid_password",
 	}
 
-	j := InitializeJwt(hmac)
+	j := jwt.InitializeJwt(hmac)
 
 	auth := InitializeAuthentication(user, j)
 	token, err := auth.Authenticate()
@@ -123,7 +125,7 @@ func TestUserAuthenticateFailPassword(t *testing.T) {
 func TestValidateTokenService(t *testing.T) {
 	token := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RAbGVhZ3VlbG9nLmNhIn0.Xx8WqprVmafi1ZaoMWiL43dC5H-Im0hTtJydprrFGWWndgeTQB91aWSan37NrIBP_rBL06Axv-MO0WJNji70kw"
 
-	j := InitializeJwt(hmac)
+	j := jwt.InitializeJwt(hmac)
 	val := InitializeValidation(j)
 
 	err := val.ValidateToken(token)
@@ -135,7 +137,7 @@ func TestValidateTokenService(t *testing.T) {
 func TestInvalidateTokenService(t *testing.T) {
 	token := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImludmFsaWRAbGVhZ3VlbG9nLmNhIn0.mkGPonVdQeQ1nTezFMVKGHvZiAY9L1dLrLDmhcV-4gvZ4bGOm8J1jSlh5eRd-eSWrOkiZqnIHRU4i1gELq2S2A"
 
-	j := InitializeJwt(hmac)
+	j := jwt.InitializeJwt(hmac)
 	val := InitializeValidation(j)
 
 	err := val.ValidateToken(token)

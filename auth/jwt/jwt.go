@@ -1,4 +1,4 @@
-package service
+package jwt
 
 import (
 	"errors"
@@ -36,9 +36,8 @@ func (j *Jwt) Validate(tString string) error {
 	t, err := jwt.Parse(tString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		} else {
-			return j.key, nil
 		}
+		return j.key, nil
 	})
 
 	var errorString string

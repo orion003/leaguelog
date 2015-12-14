@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"leaguelog/auth/jwt"
 	"leaguelog/cmd/config"
 	"leaguelog/controller"
 	"leaguelog/database/postgres"
@@ -43,6 +44,13 @@ func initializeRepo(c *controller.Controller) {
 	repo := postgres.NewPgRepository(manager)
 
 	c.SetRepository(repo)
+}
+
+func initializeTokenService(c *controller.Controller) {
+	hmac := []byte("4bab192f03bd92e7c95ee7a1d754ab0ae453d4bc1df803bf2fdde7e4ff58b895c0af2f0cf0f6b3522f0b53f11548a1240ef07c3bf4e098e4b940f26f0cb7925a")
+	ts := jwt.InitializeJwt(hmac)
+
+	c.SetTokenService(ts)
 }
 
 func initializeConfig() error {

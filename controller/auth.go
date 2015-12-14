@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"leaguelog/auth/service"
+	"leaguelog/auth"
 	"leaguelog/model"
 )
 
@@ -18,8 +18,8 @@ type AuthUser struct {
 func (au *AuthUser) Save() error {
 	repo := au.controller.repo
 
-	salt := service.GenerateRandomSalt(22)
-	hash, err := service.GenerateHashedPassword(salt, au.user.Password)
+	salt := auth.GenerateRandomSalt(22)
+	hash, err := auth.GenerateHashedPassword(salt, au.user.Password)
 	if err != nil {
 		return fmt.Errorf("Unable to generate hashed password: %v", err)
 	}
@@ -50,7 +50,7 @@ func (au *AuthUser) Exists() error {
 		return model.UserUnknownEmail
 	}
 
-	err = service.CompareHashAndPassword(user.Password, user.Salt, au.user.Password)
+	err = auth.CompareHashAndPassword(user.Password, user.Salt, au.user.Password)
 	if err != nil {
 		return model.UserIncorrectPassword
 	}
@@ -68,7 +68,7 @@ func (au *AuthUser) Claims() map[string]interface{} {
 	return claims
 }
 
-func (c *Controller) SetTokenService(t service.TokenService) {
+func (c *Controller) SetTokenService(t auth.TokenService) {
 	c.token = t
 }
 
@@ -103,7 +103,7 @@ var register = func(controller *Controller, user *model.User) (string, error) {
 	us := AuthUser{user: user, controller: controller}
 	tokenService := controller.token
 
-	auth := service.InitializeAuthentication(&us, tokenService)
+	auth := auth.InitializeAuthentication(&us, tokenService)
 
 	token, err := auth.Register()
 	if err != nil {
@@ -117,7 +117,7 @@ var login = func(controller *Controller, user *model.User) (string, error) {
 	us := AuthUser{user: user, controller: controller}
 	tokenService := controller.token
 
-	auth := service.InitializeAuthentication(&us, tokenService)
+	auth := auth.InitializeAuthentication(&us, tokenService)
 
 	token, err := auth.Authenticate()
 	if err != nil {

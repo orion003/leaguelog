@@ -12,7 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"leaguelog/auth/service"
+	"leaguelog/auth"
+	"leaguelog/auth/jwt"
 	"leaguelog/database/postgres"
 	"leaguelog/logging"
 	"leaguelog/model"
@@ -247,8 +248,8 @@ func initializeRepo() model.Repository {
 	return postgres.NewPgRepository(manager)
 }
 
-func initializeToken() service.TokenService {
+func initializeToken() auth.TokenService {
 	var hmac = []byte("579760E50509F2F28324421C7509741F5BF03B9158161076B3C6B39FB028D9E2C251490A3F8BD1F59728259A673668CAFEB49C9E9499F8386B147D7260B6937A")
 
-	return service.InitializeJwt(hmac)
+	return jwt.InitializeJwt(hmac)
 }

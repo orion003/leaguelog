@@ -9,14 +9,14 @@ import (
 
 	"leaguelog/Godeps/_workspace/src/github.com/gorilla/mux"
 
-	"leaguelog/auth/service"
+	"leaguelog/auth"
 	"leaguelog/logging"
 	"leaguelog/model"
 )
 
 type Controller struct {
 	repo  model.Repository
-	token service.TokenService
+	token auth.TokenService
 
 	log logging.Logger
 }
