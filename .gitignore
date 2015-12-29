@@ -9,8 +9,8 @@ _test
 
 **/assets/libs
 **/node_modules
+**/bower_modules
 **/tmp
-**/dist
 
 # Architecture specific extensions/prefixes
 *.[568vq]

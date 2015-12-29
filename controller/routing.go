@@ -37,6 +37,7 @@ func NewRouter(c *Controller, rt string) *mux.Router {
 
 	r.PathPrefix("/app/").Handler(http.StripPrefix("/app/", http.FileServer(http.Dir(root+"app/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir(root+"assets/"))))
+	r.PathPrefix("/dist/").Handler(http.StripPrefix("/dist/", http.FileServer(http.Dir(root+"dist/"))))
 
 	return r
 }
