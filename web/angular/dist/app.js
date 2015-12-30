@@ -1,16 +1,16 @@
-angular.module('rlApp')
-  .config(function(AngularyticsProvider) {
-    AngularyticsProvider.setEventHandlers(['GoogleUniversal']);
-  }).run(function(Angularytics) {
-    Angularytics.init();
-  });;angular.module("home", []);
+angular.module("home", []);
 angular.module("league", []);
 
 angular.module('rlApp', [
     'ui.router',
     'angularytics',
     'home',
-    'league']);;angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
+    'league']);;angular.module('rlApp')
+  .config(function(AngularyticsProvider) {
+    AngularyticsProvider.setEventHandlers(['GoogleUniversal']);
+  }).run(function(Angularytics) {
+    Angularytics.init();
+  });;angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
     function($stateProvider, $urlRouterProvider, $locationProvider) {
         $stateProvider
             .state('home', {

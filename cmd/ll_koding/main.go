@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"leaguelog/auth/jwt"
 	"leaguelog/cmd/config"
 	"leaguelog/controller"
 	"leaguelog/database/postgres"
@@ -17,12 +18,16 @@ import (
 var conf config.Config
 
 func main() {
-	initializeConfig()
+	err := initializeConfig()
+	if err != nil {
+		fmt.Printf("Unable to initialize config: %v\n", err)
+		os.Exit(1)
+	}
 
 	log := logging.NewLog15()
 	c := controller.NewController(log)
 
-	initializeRepos(c)
+	initializeRepo(c)
 
 	fmt.Printf("Initializing root route: %s \n", conf.Routing.Root)
 	r := controller.NewRouter(c, conf.Routing.Root)
@@ -31,9 +36,10 @@ func main() {
 	http.ListenAndServe(fmt.Sprintf(":%s", conf.Routing.Port), r)
 }
 
-func initializeRepos(c *controller.Controller) {
+func initializeRepo(c *controller.Controller) {
 	manager, err := postgres.NewPgManager(conf.Database.Url)
 	if err != nil {
+		fmt.Printf("Unable to intialize repo: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -42,8 +48,14 @@ func initializeRepos(c *controller.Controller) {
 	c.SetRepository(repo)
 }
 
+func initializeTokenService(c *controller.Controller) {
+	ts := jwt.InitializeJwt([]byte(conf.Auth.Key))
+
+	c.SetTokenService(ts)
+}
+
 func initializeConfig() error {
-	file, err := ioutil.ReadFile("./_config.json")
+	file, err := ioutil.ReadFile("./cmd/ll_koding/_config.json")
 	if err != nil {
 		return errors.New("Unable to open file: _config.json")
 	}
