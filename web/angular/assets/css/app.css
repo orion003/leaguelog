@@ -180,6 +180,7 @@ header {
 @media only screen and (min-width: 40.063em) {
     .home-search {
         border-right: #9E9E9E thin solid;
+        min-height: 15rem;
     }
 }
 

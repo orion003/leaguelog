@@ -10,6 +10,7 @@ _test
 **/assets/libs
 **/node_modules
 **/bower_modules
+**/dist
 **/tmp
 
 # Architecture specific extensions/prefixes
