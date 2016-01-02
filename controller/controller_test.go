@@ -36,6 +36,11 @@ type database struct {
 	Test string `json:"test"`
 }
 
+type testResponse struct {
+	body   []byte
+	header http.Header
+}
+
 func TestMain(m *testing.M) {
 	controller = NewController(log)
 	initialize()
@@ -50,14 +55,14 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetLeagues(t *testing.T) {
-	body, err := request("/api/leagues")
+	res, err := request("/api/leagues")
 	if err != nil {
 		t.Errorf("Unable to obtain body: %v", err)
 	}
 
 	leagues := make([]model.League, 1)
-	if len(body) > 0 {
-		err = json.Unmarshal(body, &leagues)
+	if len(res.body) > 0 {
+		err = json.Unmarshal(res.body, &leagues)
 		if err != nil {
 			fmt.Printf("Unable to unmarshal JSON: %v\n", err)
 		}
@@ -71,14 +76,14 @@ func TestGetLeagues(t *testing.T) {
 func TestGetStandings(t *testing.T) {
 	leagueID := 1
 
-	body, err := request(fmt.Sprintf("/api/league/%d/standings", leagueID))
+	res, err := request(fmt.Sprintf("/api/league/%d/standings", leagueID))
 	if err != nil {
 		t.Errorf("Unable to obtain body: %v", err)
 	}
 
 	standings := []model.Standing{}
-	if len(body) > 0 {
-		err = json.Unmarshal(body, &standings)
+	if len(res.body) > 0 {
+		err = json.Unmarshal(res.body, &standings)
 		if err != nil {
 			t.Errorf("Unable to unmarshal JSON: %v\n", err)
 		}
@@ -122,14 +127,14 @@ func TestGetSchedule(t *testing.T) {
 	err = controller.repo.CreateGame(game)
 
 	leagueID := 1
-	body, err := request(fmt.Sprintf("/api/league/%d/schedule", leagueID))
+	res, err := request(fmt.Sprintf("/api/league/%d/schedule", leagueID))
 	if err != nil {
 		t.Errorf("Unable to obtain body: %v", err)
 	}
 
 	schedules := []Schedule{}
-	if len(body) > 0 {
-		err = json.Unmarshal(body, &schedules)
+	if len(res.body) > 0 {
+		err = json.Unmarshal(res.body, &schedules)
 		if err != nil {
 			t.Errorf("Unable to unmarshal JSON: %v\n", err)
 		}
@@ -146,14 +151,16 @@ func TestGetSchedule(t *testing.T) {
 	}
 }
 
-func request(rURL string) ([]byte, error) {
+func request(rURL string) (testResponse, error) {
+	var r testResponse
+
 	u := fmt.Sprintf("%s%s", server.URL, rURL)
 	controller.log.Info(fmt.Sprintf("Test Request: %s", u))
 
 	res, err := http.DefaultClient.Get(u)
 	if err != nil {
 		fmt.Printf("Unable to access %s: %v\n", u, err)
-		return []byte{}, err
+		return r, err
 	}
 
 	defer res.Body.Close()
@@ -163,18 +170,25 @@ func request(rURL string) ([]byte, error) {
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("Unable to read body: %v\n", err)
-		return []byte{}, err
+		return r, err
 	}
 
-	return body, nil
+	r = testResponse{
+		body:   body,
+		header: res.Header,
+	}
+
+	return r, nil
 }
 
-func post(rURL string, data string) ([]byte, error) {
+func post(rURL string, data string) (testResponse, error) {
+	var r testResponse
+
 	u := fmt.Sprintf("%s%s", server.URL, rURL)
 
 	res, err := http.DefaultClient.Post(u, "application/json", strings.NewReader(data))
 	if err != nil {
-		return []byte{}, err
+		return r, err
 	}
 
 	controller.log.Info(fmt.Sprintf("HTTP Status: %d", res.StatusCode))
@@ -183,10 +197,15 @@ func post(rURL string, data string) ([]byte, error) {
 	defer res.Body.Close()
 
 	if err != nil {
-		return []byte{}, err
+		return r, err
 	}
 
-	return body, nil
+	r = testResponse{
+		body:   body,
+		header: res.Header,
+	}
+
+	return r, nil
 }
 
 func initialize() error {

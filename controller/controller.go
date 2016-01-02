@@ -66,7 +66,7 @@ func (c *Controller) GetLeague(w http.ResponseWriter, r *http.Request) {
 		c.log.Error(fmt.Sprintf("Unable to find league: %v", err))
 	}
 
-	err = c.jsonResponse(w, league)
+	err = c.jsonResponse(w, league, http.StatusOK)
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Unable to get league: %v", err))
 	}
@@ -86,7 +86,7 @@ func (c *Controller) GetLeagueStandings(w http.ResponseWriter, r *http.Request) 
 		c.log.Error(fmt.Sprintf("Error finding standings for season %d: %v", season.ID, err))
 	}
 
-	err = c.jsonResponse(w, standings)
+	err = c.jsonResponse(w, standings, http.StatusOK)
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Unable to get league standings: %v", err))
 	}
@@ -132,20 +132,22 @@ func (c *Controller) GetLeagueSchedule(w http.ResponseWriter, r *http.Request) {
 		schedules = append(schedules, s)
 	}
 
-	err = c.jsonResponse(w, schedules)
+	err = c.jsonResponse(w, schedules, http.StatusOK)
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Unable to get league games: %v", err))
 	}
 }
 
-func (c *Controller) jsonResponse(w http.ResponseWriter, v interface{}) error {
+func (c *Controller) jsonResponse(w http.ResponseWriter, v interface{}, code int) error {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(code)
+
 	if err := json.NewEncoder(w).Encode(v); err != nil {
 		c.log.Error(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return err
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	return nil
 }
 

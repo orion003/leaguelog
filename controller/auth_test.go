@@ -112,14 +112,18 @@ var handleLoginRequest = func(data string) (string, error) {
 }
 
 func handleAuthRequest(url string, data string) (string, error) {
-	body, err := post(url, data)
+	res, err := post(url, data)
 	if err != nil {
 		return "", fmt.Errorf("Unsuccessful post: %v\n", err)
 	}
 
-	if len(body) > 0 {
+	if !strings.Contains(res.header.Get("Content-Type"), "application/json") {
+		return "", fmt.Errorf("Incorrect header. Expected: %s, Received: %s", "application/json", res.header.Get("Content-Type"))
+	}
+
+	if len(res.body) > 0 {
 		var r map[string]interface{}
-		err = json.Unmarshal(body, &r)
+		err = json.Unmarshal(res.body, &r)
 		if err != nil {
 			return "", err
 		}

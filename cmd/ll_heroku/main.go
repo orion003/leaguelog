@@ -26,6 +26,7 @@ func main() {
 	c := controller.NewController(log)
 
 	initializeRepo(c)
+	initializeTokenService(c)
 
 	fmt.Printf("Initializing root route: %s \n", conf.Routing.Root)
 	r := controller.NewRouter(c, conf.Routing.Root)

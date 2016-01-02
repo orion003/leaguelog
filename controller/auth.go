@@ -88,14 +88,14 @@ func (c *Controller) userControllerHandler(w http.ResponseWriter, r *http.Reques
 	err := decoder.Decode(&user)
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Unable to decode user JSON: %v", err))
-		w.WriteHeader(http.StatusNotAcceptable)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	token, err := fn(c, &user)
 	if err != nil {
-		handleAuthenticationError(w, err)
+		handleAuthenticationError(c, w, err)
 	} else {
-		handleTokenResponse(w, token)
+		handleTokenResponse(c, w, token)
 	}
 }
 
@@ -127,26 +127,23 @@ var login = func(controller *Controller, user *model.User) (string, error) {
 	return token, nil
 }
 
-func handleTokenResponse(w http.ResponseWriter, token string) {
+func handleTokenResponse(controller *Controller, w http.ResponseWriter, token string) {
 	fmt.Println("Generating token.")
-	w.WriteHeader(http.StatusCreated)
-
 	t := make(map[string]string)
 	t["token"] = token
 
-	if e := json.NewEncoder(w).Encode(t); e != nil {
-		fmt.Printf("Error encoding token: %v\n", e)
+	e := controller.jsonResponse(w, t, http.StatusCreated)
+	if e != nil {
+		controller.log.Error(fmt.Sprintf("Error with token response: %v", e))
 	}
 }
 
-func handleAuthenticationError(w http.ResponseWriter, err error) {
+func handleAuthenticationError(controller *Controller, w http.ResponseWriter, err error) {
 	fmt.Printf("RegisterUser error: %v\n", err)
-	w.WriteHeader(http.StatusNotAcceptable)
+	m := jsonError(err)
 
-	m := make(map[string]string)
-	m["error"] = err.Error()
-
-	if e := json.NewEncoder(w).Encode(m); e != nil {
-		fmt.Printf("Error encoding error: %v\n", e)
+	e := controller.jsonResponse(w, m, http.StatusNotAcceptable)
+	if e != nil {
+		controller.log.Error(fmt.Sprintf("Error with Authentication Error response: %v", e))
 	}
 }
