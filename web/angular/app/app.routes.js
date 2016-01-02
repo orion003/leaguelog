@@ -1,5 +1,5 @@
-angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
-    function($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider',
+    function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
         $stateProvider
             .state('home', {
                 url: '/',
@@ -15,6 +15,11 @@ angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locati
                     'register@home': {
                         templateUrl: '/app/components/home/home.register.html',
                         controller: 'HomeRegisterController',
+                        controllerAs: 'home'
+                    },
+                    'login@home': {
+                        templateUrl: '/app/components/home/home.login.html',
+                        controller: 'HomeLoginController',
                         controllerAs: 'home'
                     }
                 }
@@ -46,8 +51,10 @@ angular.module('rlApp').config(['$stateProvider', '$urlRouterProvider', '$locati
                 url: '/screen',
                 templateUrl: '/app/components/screen/screen.html'
             });
-            
+
         $urlRouterProvider.otherwise('/');
-        
+
         $locationProvider.html5Mode(true);
+
+        $httpProvider.interceptors.push('AuthInterceptor');
     }]);
